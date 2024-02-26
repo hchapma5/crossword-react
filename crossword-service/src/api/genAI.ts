@@ -23,6 +23,13 @@ interface CrosswordData {
   };
 }
 
+function cleanGeminiResponse(response: string) {
+  let cleanData = response.slice(1, -1)
+  cleanData = cleanData.replace(/\\"/g, '"')
+  cleanData = cleanData.replace(/\{\{/g, '{').replace(/\}\}/g, '}')
+  return cleanData
+}
+
 async function askGeminiForCrosswordData(
   theme: string,
   totalWordCount: number
@@ -49,16 +56,23 @@ async function askGeminiForCrosswordData(
       "...": {{"clue": "", "answer": "", "row": , "col": }}
     }}
   }}
+
+  Additonal limitations!:
+  - The answer for each word should be a single word
+  - The answer for each word should be between 3 and 12 characters long
+  - Letters only, no numbers or special characters
+  - No two words can have the same answer
   `
 
   try {
+    
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
     const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
     const result = await model.generateContent(prompt)
-    const response = await result.response
-    const text = await response.text()
-    // const crosswordData: CrosswordData = JSON.parse(text)
-    return text
+    const response = await result.response.text()
+    const cleanData = cleanGeminiResponse(response)
+
+    return JSON.parse(cleanData)
   } catch (error) {
     console.error('Error asking Gemini:', error)
     throw new Error('Error processing crossword data')
