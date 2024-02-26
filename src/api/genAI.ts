@@ -6,7 +6,7 @@ const { GoogleGenerativeAI } = require('@google/generative-ai')
 interface CrosswordData {
   theme: string;
   across: {
-    [key: string]: {
+    [key: number]: {
       clue: string;
       answer: string;
       row: number;
@@ -14,7 +14,7 @@ interface CrosswordData {
     };
   };
   down: {
-    [key: string]: {
+    [key: number]: {
       clue: string;
       answer: string;
       row: number;
@@ -56,7 +56,7 @@ async function askGeminiForCrosswordData(
     const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
     const result = await model.generateContent(prompt)
     const response = await result.response
-    const text = response.text()
+    const text = await response.text()
     const crosswordData: CrosswordData = JSON.parse(text)
     return crosswordData
   } catch (error) {

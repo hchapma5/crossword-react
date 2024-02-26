@@ -3,7 +3,7 @@ import askGeminiForCrosswordData from './genAI'
 
 const crosswordRouter = express.Router()
 
-crosswordRouter.post('/crossword', async (req: Request, res: Response) => {
+crosswordRouter.post('/', async (req: Request, res: Response) => {
     const theme = req.body.theme
     const totalWordCount = req.body.totalWordCount
 
