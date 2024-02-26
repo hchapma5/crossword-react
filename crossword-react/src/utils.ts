@@ -1,5 +1,6 @@
-export const API_HOST = import.meta.env.VITE_API_HOST || ''
+import axios from 'axios'
 
+export const API_HOST = import.meta.env.VITE_API_HOST || ''
 export interface CrosswordData {
     theme: string;
     across: {
@@ -20,24 +21,19 @@ export interface CrosswordData {
     };
   }
 
-export async function fetchCrosswordData( theme: string, totalWordCount: number ) {
-    try {const response = await fetch(`${API_HOST}/api`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ 
-            theme: `${theme}`, 
-            totalWordCount: totalWordCount 
-        })
-    })
-    if (!response.ok) {
-      throw new Error(`Error: ${response.status}`)
-    }
-    return await response.json() as Promise<CrosswordData>
-  } catch (error) {
-    console.error('Error fetching crossword data:', error)
-    throw error
+export const postData = async (theme: string, totalWordCount: number) => {
+  const url = `${API_HOST}/api`
+  const data = {
+    theme: theme,
+    totalWordCount: totalWordCount
   }
-}
+
+  try {
+    const response = await axios.post(url, data)
+    console.log('response', response.data)
+    return response.data
+  } catch (error) {
+    console.log('Error fetching crossword data:', error)
+  }
+} 
 

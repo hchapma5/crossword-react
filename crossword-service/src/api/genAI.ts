@@ -57,8 +57,8 @@ async function askGeminiForCrosswordData(
     const result = await model.generateContent(prompt)
     const response = await result.response
     const text = await response.text()
-    const crosswordData: CrosswordData = JSON.parse(text)
-    return crosswordData
+    // const crosswordData: CrosswordData = JSON.parse(text)
+    return text
   } catch (error) {
     console.error('Error asking Gemini:', error)
     throw new Error('Error processing crossword data')
