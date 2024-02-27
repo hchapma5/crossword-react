@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { postData } from './utils'
+import { Box, Button, CircularProgress, Container, Slider, TextField } from '@mui/material'
+import { Crossword, Clues } from './components'
 
 import './App.css'
-import { Box, Button, CircularProgress, Slider, TextField } from '@mui/material'
 
 function App() {
   const [loading, setLoading] = useState(false)
@@ -55,7 +56,11 @@ function App() {
         )
       )}
       {/* Conditionally render the data if it exists */}
-      {data && <pre>{JSON.stringify(data, null, 2)}</pre>}
+      {/* {data && <pre>{JSON.stringify(data, null, 2)}</pre>} */}
+      {data && <Container>
+        <Crossword data={data}/>
+        <Clues data={data} />
+        </Container>}
     </div>
   );
 }
