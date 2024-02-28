@@ -1,33 +1,18 @@
 import { Container } from "@mui/material"
-import { CrosswordData } from "../utils"
+import { CrosswordData } from "../utils/utils"
 
 interface CluesProps {
   data: CrosswordData
 }
 
-export default function Clues({ data }: CluesProps) {
-  const { across, down } = data
-  const acrossWords = Object.values(across)
-  const downWords = Object.values(down)
-
+export default function Clues( props : CluesProps ) {
+  const { theme, data } = props.data
   return (
-    <Container sx={{display: "flex"}}>
-      <div>
-        <h2>Across</h2>
-        <ol>
-          {acrossWords.map((word: { clue: string; answer: string; row: number; col: number; }, index: number) => (
-            <li key={index}>{word.clue}</li>
-          ))}
-        </ol>
-      </div>
-      <div>
-        <h2>Down</h2>
-        <ol>
-          {downWords.map((word: { clue: string; answer: string; row: number; col: number; }, index: number) => (
-            <li key={index}>{word.clue}</li>
-          ))}
-        </ol>
-      </div>
+    <Container>
+      <h2>{theme}</h2>
+      {data.map((d) => (
+        <ul>{d.clue}</ul>
+      ))}
     </Container>
   )
 }
