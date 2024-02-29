@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { CrosswordData, postData } from "./utils/utils";
-import { CrosswordForm } from "./components";
+import { CrosswordClues, CrosswordForm, CrosswordGrid } from "./components";
 import { Button } from "./components/ui/button";
 import { Loader2 } from "lucide-react";
 
@@ -27,7 +27,14 @@ function App() {
       ) : (
         !crosswordData && <CrosswordForm onSubmit={handleFormData} />
       )}
-      {crosswordData && <div>{JSON.stringify(crosswordData, null, 2)}</div>}
+      {/* Used for testing purposes */}
+      {/* {crosswordData && <div>{JSON.stringify(crosswordData, null, 2)}</div>} */}
+      {crosswordData && (
+        <div className="flex flex-col w-4/5 justify-center items-center gap-4">
+          <CrosswordGrid data={crosswordData} />
+          <CrosswordClues data={crosswordData} />
+        </div>
+      )}
     </>
   );
 }
