@@ -1,10 +1,12 @@
-import { CrosswordData } from "../utils/utils";
-import clg from "crossword-layout-generator";
+import { WordPosition } from "@/types/types";
+
 interface CrosswordProps {
-  data: CrosswordData;
+  cols: number;
+  wordPositions: WordPosition[];
+  layout: string[][];
 }
 
-function findEmptyCells(
+function hideEmptyCells(
   table: string[][],
   rowIndex: number,
   columnIndex: number
@@ -16,24 +18,11 @@ function findEmptyCells(
   }
 }
 
-type CrosswordObject = {
-  answer: string;
-  startx: number;
-  starty: number;
-  orientation: string;
-  position: number;
-};
-
 export default function CrosswordGrid(props: CrosswordProps) {
-  const { data } = props.data;
-
-  const layout = clg.generateLayout(data);
-  const table = layout.table;
-  const numColumns = table[0].length;
-  const puzzle = layout.result as CrosswordObject[];
+  const { cols, wordPositions, layout } = props;
 
   function getPosition(x: number, y: number): number | null {
-    const found = puzzle.find(
+    const found = wordPositions.find(
       (word) => word.startx === x + 1 && word.starty === y + 1
     );
     return found ? found.position : null;
@@ -42,22 +31,24 @@ export default function CrosswordGrid(props: CrosswordProps) {
   return (
     <div
       style={{
-        gridTemplateColumns: `repeat(${numColumns}, minmax(0, 1fr))`,
+        gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
       }}
-      className="grid w-full gap-1"
+      className="grid w-full gap-0.5 border-2 border-grey-500 p-4 relative"
     >
-      {table.map((row: string[], rowIndex: number) =>
+      {layout.map((row: string[], rowIndex: number) =>
         row.map((cell: string, columnIndex: number) => (
           <div
             key={`${rowIndex}-${columnIndex}`}
-            className={`bg-white border-2 border-gray-500 aspect-square px-1 ${findEmptyCells(
-              table,
+            className={`flex items-center justify-center bg-white border-2 border-gray-500 aspect-square text-xl px-1 relative ${hideEmptyCells(
+              layout,
               rowIndex,
               columnIndex
             )}`}
           >
-            {getPosition(columnIndex, rowIndex)}
-            {/* {cell} */}
+            <label className="absolute top-0 left-0 font-semibold text-[1rem] mx-1">
+              {getPosition(columnIndex, rowIndex)}
+            </label>
+            {cell}
           </div>
         ))
       )}

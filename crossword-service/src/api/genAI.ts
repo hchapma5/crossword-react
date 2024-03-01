@@ -1,14 +1,14 @@
-const { GoogleGenerativeAI } = require('@google/generative-ai')
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 interface CrosswordData {
-  theme: string
-  data: Array<{clue: string, answer: string}>
+  theme: string;
+  data: Array<{ clue: string; answer: string }>;
 }
 
 async function askGeminiForCrosswordData(
   theme: string,
   totalWordCount: number
-) : Promise<CrosswordData> {
+): Promise<CrosswordData> {
   const prompt = `
   Consider the following information carefully when generating data for a crossword puzzle:
 
@@ -16,7 +16,8 @@ async function askGeminiForCrosswordData(
   - You MUST provide ${totalWordCount} words.
   - Each word MUST be unique.
   - Each word MUST have a unique clue.
-  - Each word MUST be 3-10 characters long.
+  - Each word MUST be between 3 and 8 characters long.
+  - Each word MUST be one SINGLE word, not a combination of words.
   - Words MUST ONLY contain letters. (NO numbers, spaces, or special characters.)
 
   Response MUST follow the example format:
@@ -29,21 +30,19 @@ async function askGeminiForCrosswordData(
   }
 
   Do NOT include any additional information in the response.
-  `
+  `;
 
   try {
-    
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
-    const result = await model.generateContent(prompt)
-    const response = await result.response.text()
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const result = await model.generateContent(prompt);
+    const response = await result.response.text();
 
-    return JSON.parse(response)
-
+    return JSON.parse(response);
   } catch (error) {
-    console.error('Error asking Gemini:', error)
-    throw new Error('Error processing crossword data')
+    console.error("Error asking Gemini:", error);
+    throw new Error("Error processing crossword data");
   }
 }
 
-export default askGeminiForCrosswordData
+export default askGeminiForCrosswordData;

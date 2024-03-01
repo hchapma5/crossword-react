@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { CrosswordData, postData } from "./utils/utils";
-import { CrosswordClues, CrosswordForm, CrosswordGrid } from "./components";
+import { postData } from "./utils/utils";
+import { CrosswordForm, CrosswordGame } from "./components";
 import { Button } from "./components/ui/button";
 import { Loader2 } from "lucide-react";
+import { CrosswordData } from "./types/types";
 
 function App() {
   const [loading, setLoading] = useState(false);
@@ -18,7 +19,7 @@ function App() {
   };
 
   return (
-    <>
+    <div className="max-h-[100vh] w-[80%] flex justify-center">
       {loading ? (
         <Button variant={"ghost"} disabled>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -29,13 +30,8 @@ function App() {
       )}
       {/* Used for testing purposes */}
       {/* {crosswordData && <div>{JSON.stringify(crosswordData, null, 2)}</div>} */}
-      {crosswordData && (
-        <div className="flex flex-col w-4/5 justify-center items-center gap-4">
-          <CrosswordGrid data={crosswordData} />
-          <CrosswordClues data={crosswordData} />
-        </div>
-      )}
-    </>
+      {crosswordData && <CrosswordGame data={crosswordData} />}
+    </div>
   );
 }
 

@@ -1,19 +1,40 @@
-import { CrosswordData } from "../utils/utils";
+import { Card, CardContent, CardDescription, CardTitle } from "./ui/card";
 
 interface CluesProps {
-  data: CrosswordData;
+  clues: {
+    clue: string;
+    direction: string;
+    position: number;
+  }[];
 }
 
 export default function CrosswordClues(props: CluesProps) {
-  const { theme, data } = props.data;
+  const { clues } = props;
+
+  const acrossClues = clues.filter((clue) => clue.direction === "across");
+  const downClues = clues.filter((clue) => clue.direction === "down");
+
   return (
-    <div>
-      <h2 className="text-2xl font-semibold mb-4">{theme}</h2>
-      {data.map((d, i) => (
-        <ul className="">
-          {i + 1} {d.clue}
-        </ul>
-      ))}
-    </div>
+    <Card className="flex flex-col p-4 gap-4 w-1/4">
+      <CardTitle>Clues</CardTitle>
+      <CardDescription>Across</CardDescription>
+      <CardContent>
+        {acrossClues.map((clue) => (
+          <div key={clue.position} className="flex gap-4">
+            <p className="font-semibold text-gray-500">{clue.position}</p>
+            <p>{clue.clue}</p>
+          </div>
+        ))}
+      </CardContent>
+      <CardDescription>Down</CardDescription>
+      <CardContent>
+        {downClues.map((clue) => (
+          <div key={clue.position} className="flex gap-4">
+            <p className="font-semibold text-gray-500">{clue.position}</p>
+            <p>{clue.clue}</p>
+          </div>
+        ))}
+      </CardContent>
+    </Card>
   );
 }
