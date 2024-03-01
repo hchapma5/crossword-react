@@ -1,4 +1,4 @@
-# Crossword Puzzle Generator 🧩🤓
+# Crossword Puzzle Generator 🧩
 
 ## Overview
 
@@ -17,4 +17,4 @@ This project aims to create a unique crossword puzzle generator that allows user
 
 ## Tech 💻
 
-- `React` `Material UI` `Express.js` `Google Gemini API`
+- `React` `Shadcn/ui` `Tailwindcss` `Express.js` `Google Gemini API` `Crossword-layout-generator`
