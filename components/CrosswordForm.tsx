@@ -28,6 +28,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form"
+import { fetchPuzzleData } from "@/actions/fetchPuzzleData"
 
 const formSchema = z.object({
   theme: z.string().regex(/^[A-za-z ]+$/, {
@@ -54,9 +55,7 @@ export default function CrosswordForm() {
       <CardContent>
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(({ theme, wordCount }) =>
-              console.log(theme, wordCount)
-            )}
+            action={fetchPuzzleData}
             className="grid w-full items-center gap-4"
           >
             <FormField

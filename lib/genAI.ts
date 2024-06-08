@@ -1,10 +1,10 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai")
+import { GoogleGenerativeAI } from "@google/generative-ai"
 import { CrosswordData } from "@/types/types"
 
 async function askGeminiForCrosswordData(
   theme: string,
   totalWordCount: number
-): Promise<CrosswordData> {
+) {
   const prompt = `
   Consider the following information carefully when generating data for a crossword puzzle:
 
@@ -29,12 +29,13 @@ async function askGeminiForCrosswordData(
   `
 
   try {
+    // declare gemini api key from .env.local
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
     const model = genAI.getGenerativeModel({ model: "gemini-pro" })
     const result = await model.generateContent(prompt)
-    const response = await result.response.text()
+    const response = result.response.text()
 
-    return JSON.parse(response)
+    return response
   } catch (error) {
     console.error("Error asking Gemini:", error)
     throw new Error("Error processing crossword data")
