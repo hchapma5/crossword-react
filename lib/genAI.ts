@@ -1,5 +1,5 @@
-import { GoogleGenerativeAI } from "@google/generative-ai"
-import { CrosswordData } from "@/types/types"
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import { CrosswordData } from "@/types/types";
 
 async function askGeminiForCrosswordData(
   theme: string,
@@ -26,20 +26,20 @@ async function askGeminiForCrosswordData(
   }
 
   Do NOT include any additional information in the response.
-  `
+  `;
 
   try {
     // declare gemini api key from .env.local
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-    const model = genAI.getGenerativeModel({ model: "gemini-pro" })
-    const result = await model.generateContent(prompt)
-    const response = result.response.text()
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    const result = await model.generateContent(prompt);
+    const response = result.response.text();
 
-    return response
+    return response;
   } catch (error) {
-    console.error("Error asking Gemini:", error)
-    throw new Error("Error processing crossword data")
+    console.error("Error asking Gemini:", error);
+    throw new Error("Error processing crossword data");
   }
 }
 
-export default askGeminiForCrosswordData
+export default askGeminiForCrosswordData;
