@@ -1,5 +1,5 @@
 {
-  "id": "7c6f0d2f-bcc8-4276-b133-46211f08c81c",
+  "id": "fb33d3c2-36d7-40be-882b-bc46706c505c",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -10,9 +10,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "theme": {
           "name": "theme",
@@ -28,9 +29,23 @@
         },
         "data": {
           "name": "data",
-          "type": "json",
+          "type": "jsonb",
           "primaryKey": false,
           "notNull": true
+        },
+        "createdAt": {
+          "name": "createdAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updatedAt": {
+          "name": "updatedAt",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
         }
       },
       "indexes": {},

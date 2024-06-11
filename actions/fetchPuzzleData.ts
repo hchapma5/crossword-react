@@ -2,28 +2,35 @@
 
 import { redirect } from "next/navigation";
 import askGeminiForCrosswordData from "@/lib/genAI";
+import { getCrosswordByTheme, insertCrosswordData } from "@/db/query";
+import { isRedirectError } from "next/dist/client/components/redirect";
 
-export const fetchPuzzleData = async (formData: FormData) => {
+export const fetchPuzzleData = async (formData: {
+  theme: string;
+  wordCount: number;
+}) => {
   try {
     // Extract theme and word count from form data
-    const theme = formData.get("theme") as string;
-    const totalWordCount = parseInt(formData.get("wordCount") as string, 10);
+    const { theme, wordCount } = formData;
 
-    // Fetch crossword data from Gemini API
-    const crosswordData = await askGeminiForCrosswordData(
-      theme,
-      totalWordCount
-    );
+    // Check if the crossword exists in the database
+    let crosswordId = await getCrosswordByTheme(theme);
 
-    // Encapsulate the crossword data in URL params
-    const crosswordParams = new URLSearchParams();
+    if (!crosswordId) {
+      // Fetch crossword data from Gemini API
+      const crosswordData = await askGeminiForCrosswordData(theme, wordCount);
+      const parsedData = await JSON.parse(crosswordData);
 
-    crosswordParams.append("crosswordData", crosswordData);
+      // Create a new crossword in the database
+      crosswordId = await insertCrosswordData(theme, wordCount, parsedData);
+    }
 
-    console.log(crosswordParams);
-    // Redirect user to the crossword page with the crossword data
-    redirect(`/crossword?${crosswordParams}`);
+    // Redirect user to the crossword page w/ the crossword ID
+    redirect(`/crossword/${crosswordId}`);
   } catch (error) {
+    if (isRedirectError(error)) {
+      throw error;
+    }
     throw new Error("Error generating crossword data");
   }
 };
