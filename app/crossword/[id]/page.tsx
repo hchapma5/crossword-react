@@ -15,7 +15,7 @@ interface Params {
 
 export default async function CrosswordPage({ params }: Params) {
   // Fetch crossword data from the database
-  const { theme, data } = await getCrosswordDataById(params.id);
+  const [theme, data] = await getCrosswordDataById(params.id);
 
   const layout: CrosswordPuzzle = clg.generateLayout(data);
 
@@ -32,15 +32,16 @@ export default async function CrosswordPage({ params }: Params) {
   }));
 
   return (
-    <div className="border-grey-500 flex w-full flex-col items-center border-2 p-8">
-      <h1 className="mb-4 text-2xl font-semibold">{theme}</h1>
-      <div className="flex w-full justify-evenly p-4">
+    <div className="border-grey-500 flex w-3/4 flex-col items-center border-2 p-8">
+      <h1 className="mb-4 text-2xl font-semibold">{theme as string}</h1>
+      <div className="flex w-full p-4">
         <CrosswordGrid
           cols={layout.cols}
+          rows={layout.rows}
           wordPositions={wordPositions}
           layout={layout.table}
         />
-        <CrosswordClues clues={clues} />
+        {/* <CrosswordClues clues={clues} /> */}
       </div>
       <div className="mt-4 justify-center">
         <Button>

@@ -1,57 +1,56 @@
-import { WordPosition } from "@/types/types"
+import { WordPosition } from "@/types/types";
 
 interface CrosswordProps {
-  cols: number
-  wordPositions: WordPosition[]
-  layout: string[][]
+  cols: number;
+  rows: number;
+  wordPositions: WordPosition[];
+  layout: string[][];
 }
 
 function hideEmptyCells(
   table: string[][],
   rowIndex: number,
-  columnIndex: number
+  columnIndex: number,
 ) {
   if (table[rowIndex][columnIndex] === "-") {
-    return "invisible"
+    return "invisible";
   } else {
-    return ""
+    return "";
   }
 }
 
 export default function CrosswordGrid(props: CrosswordProps) {
-  const { cols, wordPositions, layout } = props
+  const { cols, rows, wordPositions, layout } = props;
 
   function getPosition(x: number, y: number): number | null {
     const found = wordPositions.find(
-      (word) => word.startx === x + 1 && word.starty === y + 1
-    )
-    return found ? found.position : null
+      (word) => word.startx === x + 1 && word.starty === y + 1,
+    );
+    return found ? found.position : null;
   }
 
   return (
     <div
-      style={{
-        gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-      }}
-      className="grid w-full gap-0.5 border-2 border-grey-500 p-4 relative"
+      style={{ gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))` }}
+      className="border-grey-500 border-collape grid w-full gap-0"
     >
       {layout.map((row: string[], rowIndex: number) =>
         row.map((cell: string, columnIndex: number) => (
           <div
             key={`${rowIndex}-${columnIndex}`}
-            className={`flex items-center justify-center bg-white border-2 border-gray-500 aspect-square text-xl px-1 relative ${hideEmptyCells(
+            className={`relative flex aspect-square items-center justify-center bg-red-100 ${hideEmptyCells(
               layout,
               rowIndex,
-              columnIndex
+              columnIndex,
             )}`}
           >
-            <label className="absolute top-0 left-0 font-semibold text-[1rem] mx-1">
+            <label className="absolute left-0 top-0 mx-1 text-[0.8rem] font-semibold">
               {getPosition(columnIndex, rowIndex)}
             </label>
             {cell}
           </div>
-        ))
+        )),
       )}
     </div>
-  )
+  );
 }

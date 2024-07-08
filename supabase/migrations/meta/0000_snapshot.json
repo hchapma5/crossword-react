@@ -1,5 +1,5 @@
 {
-  "id": "fb33d3c2-36d7-40be-882b-bc46706c505c",
+  "id": "a33ab558-be41-4509-9c38-6a4686de2dfc",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -21,12 +21,6 @@
           "primaryKey": false,
           "notNull": true
         },
-        "size": {
-          "name": "size",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true
-        },
         "data": {
           "name": "data",
           "type": "jsonb",
@@ -35,13 +29,6 @@
         },
         "createdAt": {
           "name": "createdAt",
-          "type": "timestamp",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
-        },
-        "updatedAt": {
-          "name": "updatedAt",
           "type": "timestamp",
           "primaryKey": false,
           "notNull": true,

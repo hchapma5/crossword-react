@@ -102,7 +102,7 @@ export default function CrosswordForm() {
                           </FormControl>
                           <SelectContent position="popper">
                             <SelectGroup>
-                              {[5, 10, 15, 20].map((count) => (
+                              {[10, 20, 30].map((count) => (
                                 <SelectItem
                                   key={`wordCount-${count}`}
                                   value={`${count}`}
