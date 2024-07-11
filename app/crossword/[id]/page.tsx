@@ -31,12 +31,11 @@ export default async function CrosswordPage({ params }: Params) {
     layout.result,
     (word) => ({
       id: word.position,
-      position: [word.startx, word.starty],
+      position: [word.starty, word.startx],
       orientation: word.orientation,
     }),
   );
 
-  console.log(layout.result, layout.table);
   return (
     <div className="flex items-center justify-center">
       <div>
@@ -45,7 +44,7 @@ export default async function CrosswordPage({ params }: Params) {
           cols={layout.cols}
           rows={layout.rows}
           wordConfigs={wordConfigs}
-          layout={layout.table}
+          layout={gridLayout}
         />
       </div>
       <CrosswordClues clues={clues} />

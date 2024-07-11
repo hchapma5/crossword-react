@@ -7,7 +7,7 @@ type CrosswordPuzzle = {
     answer: string;
     startx: number;
     starty: number;
-    orientation: "across" | "down" | "none";
+    orientation: Direction;
     position: number;
   }[];
   rows: number;
@@ -23,4 +23,12 @@ type WordConfiguration = {
 
 type Position = [row: number, col: number];
 
-export type { CrosswordData, CrosswordPuzzle, WordConfiguration, Position };
+type Direction = "across" | "down" | "none";
+
+export type {
+  CrosswordData,
+  CrosswordPuzzle,
+  WordConfiguration,
+  Position,
+  Direction,
+};
