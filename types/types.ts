@@ -15,10 +15,12 @@ type CrosswordPuzzle = {
   table_string: string;
 };
 
-type WordPosition = {
-  position: number;
-  startx: number;
-  starty: number;
+type WordConfiguration = {
+  id: number;
+  position: Position;
+  orientation: "across" | "down" | "none";
 };
 
-export type { CrosswordData, CrosswordPuzzle, WordPosition };
+type Position = [row: number, col: number];
+
+export type { CrosswordData, CrosswordPuzzle, WordConfiguration, Position };
