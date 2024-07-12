@@ -15,20 +15,22 @@ type CrosswordPuzzle = {
   table_string: string;
 };
 
-type WordConfiguration = {
+type WordPosition = {
   id: number;
   position: Position;
-  orientation: "across" | "down" | "none";
 };
+
+type DirectionsMap = { [key: string]: Direction };
 
 type Position = [row: number, col: number];
 
-type Direction = "across" | "down" | "none";
+type Direction = "across" | "down" | "intersection" | "none";
 
 export type {
   CrosswordData,
   CrosswordPuzzle,
-  WordConfiguration,
+  WordPosition,
   Position,
   Direction,
+  DirectionsMap,
 };
