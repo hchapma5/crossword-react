@@ -48,8 +48,10 @@ export default function CrosswordGame(props: CrosswordGameProps) {
   const hideEmptyCells = (row: number, col: number) =>
     layout[row][col] === "-" ? "invisible border-none" : "";
 
+  const highlightSelected = (row: number, col: number) =>
+    row === selected[0] && col === selected[1] ? "bg-blue-300" : "";
+
   useEffect(() => {
-    console.log(selected);
     const [row, col] = selected;
     const input = inputRefs.current[row - 1][col - 1];
     if (input) {
@@ -60,19 +62,18 @@ export default function CrosswordGame(props: CrosswordGameProps) {
         ? direction
         : directions[`${row}-${col}`],
     );
-  }, [selected]);
+  }, [direction, directions, selected]);
 
   return (
     <form action={isPuzzleComplete}>
       <table className="border-collapse">
-        g
         <tbody>
           {layout.map((row, rowIndex) => (
             <tr key={`row-${rowIndex}`}>
               {row.map((_, colIndex) => (
                 <td
                   key={`row-${rowIndex}-col-${colIndex}`}
-                  className={`relative aspect-square h-16 w-16 border border-black text-center ${hideEmptyCells(rowIndex, colIndex)}`}
+                  className={`relative aspect-square h-12 w-12 border border-black text-center ${hideEmptyCells(rowIndex, colIndex)}`}
                 >
                   {layout[rowIndex][colIndex] !== "-" && (
                     <>
@@ -101,7 +102,8 @@ export default function CrosswordGame(props: CrosswordGameProps) {
                             inputRefs.current[nextPosition[0] - 1] &&
                             inputRefs.current[nextPosition[0] - 1][
                               nextPosition[1] - 1
-                            ]
+                            ] &&
+                            e.target.value.length === 1
                           )
                             setSelected(nextPosition);
                         }}
@@ -115,6 +117,23 @@ export default function CrosswordGame(props: CrosswordGameProps) {
                             nextPosition = [selected[0], selected[1] - 1];
                           } else if (e.key === "ArrowRight") {
                             nextPosition = [selected[0], selected[1] + 1];
+                          } else if (e.key === "Tab") {
+                            e.preventDefault(); // Prevent default tabbing behavior
+                            if (e.shiftKey) {
+                              // Shift + Tab
+                              if (direction === "across") {
+                                nextPosition = [selected[0], selected[1] - 1];
+                              } else if (direction === "down") {
+                                nextPosition = [selected[0] - 1, selected[1]];
+                              }
+                            } else {
+                              // Tab
+                              if (direction === "across") {
+                                nextPosition = [selected[0], selected[1] + 1];
+                              } else if (direction === "down") {
+                                nextPosition = [selected[0] + 1, selected[1]];
+                              }
+                            }
                           }
                           if (
                             inputRefs.current[nextPosition[0] - 1] &&
@@ -127,7 +146,11 @@ export default function CrosswordGame(props: CrosswordGameProps) {
                         onClick={() =>
                           setSelected([rowIndex + 1, colIndex + 1])
                         }
-                        className="h-full w-full text-center text-xl"
+                        // Handle Delete and Backspace
+                        onSelect={(e) =>
+                          e.currentTarget.setSelectionRange(0, 1)
+                        }
+                        className={`h-full w-full text-center text-xl ${highlightSelected(rowIndex + 1, colIndex + 1)}`}
                         maxLength={1}
                       />
                     </>

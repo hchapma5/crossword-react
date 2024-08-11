@@ -69,7 +69,7 @@ export default async function CrosswordPage({ params }: Params) {
           layout={gridLayout}
         />
       </div>
-      <CrosswordClues clues={clues} />
+      {/* <CrosswordClues clues={clues} /> */}
       {/* <Button>
         <Link href="/">Get a new puzzle</Link>
       </Button> */}
