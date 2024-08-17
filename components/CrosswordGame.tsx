@@ -48,9 +48,6 @@ export default function CrosswordGame(props: CrosswordGameProps) {
   const hideEmptyCells = (row: number, col: number) =>
     layout[row][col] === "-" ? "invisible border-none" : "";
 
-  const highlightSelected = (row: number, col: number) =>
-    row === selected[0] && col === selected[1] ? "bg-blue-300" : "";
-
   useEffect(() => {
     const [row, col] = selected;
     const input = inputRefs.current[row - 1][col - 1];
@@ -150,7 +147,7 @@ export default function CrosswordGame(props: CrosswordGameProps) {
                         onSelect={(e) =>
                           e.currentTarget.setSelectionRange(0, 1)
                         }
-                        className={`h-full w-full text-center text-xl ${highlightSelected(rowIndex + 1, colIndex + 1)}`}
+                        className={`h-full w-full text-center text-xl`}
                         maxLength={1}
                       />
                     </>

@@ -18,6 +18,7 @@ type CrosswordPuzzle = {
 type WordPosition = {
   id: number;
   position: Position;
+  length: number;
 };
 
 type DirectionsMap = { [key: string]: Direction };

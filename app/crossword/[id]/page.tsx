@@ -35,6 +35,7 @@ export default async function CrosswordPage({ params }: Params) {
   const wordPositions: WordPosition[] = Array.from(layout.result, (word) => ({
     id: word.position,
     position: [word.starty, word.startx],
+    length: word.answer.length,
   }));
 
   let directionMap: DirectionsMap = {};
