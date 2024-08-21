@@ -1,13 +1,7 @@
 "use server";
 
-import clg from "crossword-layout-generator";
 import { Button } from "@/components/ui/button";
-import {
-  CrosswordPuzzle,
-  Direction,
-  DirectionsMap,
-  WordPosition,
-} from "@/types/types";
+import { Direction, Position } from "@/types/types";
 import { getCrosswordDataById } from "@/db/query";
 import Link from "next/link";
 import CrosswordGame from "@/components/CrosswordGame";
@@ -27,53 +21,45 @@ export const isPuzzleComplete = async (formData: FormData) => {
 };
 
 export default async function CrosswordPage({ params }: Params) {
-  const [theme, data] = await getCrosswordDataById(params.id);
+  const [theme, puzzleData] = await getCrosswordDataById(params.id);
 
-  // const gridLayout = layout.table.map((row) =>
-  //   row.map((cell) => (cell === "-" ? "-" : "")),
-  // );
+  // Build a map of the puzzle data to serve the client
+  // TODO: need to either overload key comparison or use a string key
+  let puzzleMap = new Map<Position, { direction: Direction; id: number }>();
 
-  // const clues = Array.from(layout.result, (data) => ({
-  //   clue: data.clue,
-  //   direction: data.orientation,
-  //   position: data.position,
-  // }));
+  puzzleData.result.forEach((word) => {
+    // Skip words without an orientation
+    if (word.orientation === "none") return;
 
-  // const wordPositions: WordPosition[] = Array.from(layout.result, (word) => ({
-  //   id: word.position,
-  //   position: [word.starty, word.startx],
-  //   length: word.answer.length,
-  // }));
+    word.answer.split("").forEach((_, i) => {
+      const position: Position =
+        word.orientation === "across"
+          ? [word.starty, word.startx + i]
+          : [word.starty + i, word.startx];
 
-  // let directionMap: DirectionsMap = {};
+      // TODO: hanlde case where word already exists in the map (i.e. intersection)
+      if (puzzleMap.has(position)) {
+        console.log("this is an intersection", position);
+      } else {
+        puzzleMap.set(position, {
+          direction: word.orientation,
+          id: word.position,
+        });
+      }
+    });
+  });
 
-  // layout.result.forEach((word) => {
-  //   for (let i = 0; i < word.answer.length; i++) {
-  //     let key = "";
-  //     if (word.orientation === "across") {
-  //       key = `${word.starty}-${word.startx + i}`;
-  //     } else if (word.orientation === "down") {
-  //       key = `${word.starty + i}-${word.startx}`;
-  //     }
-  //     if (directionMap[key]) {
-  //       directionMap[key] = "intersection";
-  //     } else {
-  //       directionMap[key] = word.orientation;
-  //     }
-  //   }
-  // });
+  console.log(puzzleMap);
 
   return (
     <div className="flex items-center justify-center">
       <div>
         <h1 className="mb-4 text-2xl font-semibold">{theme as string}</h1>
-        {/* <CrosswordGame
-          cols={layout.cols}
-          rows={layout.rows}
-          positions={wordPositions}
-          directions={directionMap}
-          layout={gridLayout}
-        /> */}
+        <CrosswordGame
+          cols={puzzleData.cols}
+          rows={puzzleData.rows}
+          map={puzzleMap}
+        />
       </div>
       {/* <CrosswordClues clues={clues} /> */}
       {/* <Button>

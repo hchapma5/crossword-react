@@ -23,8 +23,6 @@ export const fetchPuzzleData = async (formData: FormData) => {
       // Generate a crossword layout
       const crosswordData = clg.generateLayout(aiResponse);
 
-      console.log(crosswordData);
-
       // Create a new crossword in the database
       crosswordId = await insertCrosswordData(theme, crosswordData);
     }
