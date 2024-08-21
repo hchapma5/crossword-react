@@ -7,8 +7,8 @@ import {
   Direction,
   DirectionsMap,
 } from "@/types/types";
-import { isPuzzleComplete } from "@/actions/isPuzzleComplete";
 import { Button } from "./ui/button";
+import { isPuzzleComplete } from "@/app/crossword/[id]/page";
 
 interface CrosswordGameProps {
   cols: number;
@@ -17,6 +17,21 @@ interface CrosswordGameProps {
   directions: DirectionsMap;
   layout: string[][];
 }
+
+/**
+ *
+ *  Game plan:
+ *
+ * Needed props:
+ * - puzzleMap[[y, x]] -> { direction (across, down, intersection), wordId }
+ * - rows
+ * - cols
+ *
+ * build a table with rows and cols
+ * if the cell is empty, hide the cell
+ * if the cell is apart of a word, render input field
+ * if the cell is the start of a word, show the wordId
+ */
 
 export default function CrosswordGame(props: CrosswordGameProps) {
   const { positions, directions, layout, rows, cols } = props;

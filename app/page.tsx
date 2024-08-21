@@ -4,14 +4,14 @@ import { fetchPuzzleData } from "@/actions/fetchPuzzleData";
 
 export default function HomePage() {
   return (
-    <div className="flex w-1/2 flex-col items-center justify-center gap-y-24">
-      <h1 className="text-ellipsis break-words text-center text-6xl font-bold">
+    <div className="flex flex-col items-center justify-center gap-y-24">
+      <h1 className="w-1/2 text-ellipsis break-words text-center text-6xl font-bold">
         Crossword Puzzle{" "}
         <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
           Generator
         </span>
       </h1>
-      <form action={fetchPuzzleData} className="flex w-full flex-col">
+      <form action={fetchPuzzleData} className="flex w-1/2 flex-col">
         <Input
           id="theme"
           name="theme"

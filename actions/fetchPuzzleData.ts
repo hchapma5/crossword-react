@@ -2,8 +2,10 @@
 
 import { redirect } from "next/navigation";
 import askGeminiForCrosswordData from "@/lib/genAI";
+import clg from "crossword-layout-generator";
 import { getCrosswordByTheme, insertCrosswordData } from "@/db/query";
 import { isRedirectError } from "next/dist/client/components/redirect";
+import { GenAiCrosswordData } from "@/types/types";
 
 export const fetchPuzzleData = async (formData: FormData) => {
   try {
@@ -15,7 +17,14 @@ export const fetchPuzzleData = async (formData: FormData) => {
 
     if (!crosswordId) {
       // Fetch crossword data from Gemini API
-      const crosswordData = await askGeminiForCrosswordData(theme);
+      const aiResponse: GenAiCrosswordData =
+        await askGeminiForCrosswordData(theme);
+
+      // Generate a crossword layout
+      const crosswordData = clg.generateLayout(aiResponse);
+
+      console.log(crosswordData);
+
       // Create a new crossword in the database
       crosswordId = await insertCrosswordData(theme, crosswordData);
     }
