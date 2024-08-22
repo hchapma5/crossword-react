@@ -6,8 +6,10 @@ import { getCrosswordDataById } from "@/db/query";
 import Link from "next/link";
 import CrosswordGame from "@/components/CrosswordGame";
 import CrosswordClues from "@/components/CrosswordClues";
+import { is } from "drizzle-orm";
 
-let crosswordPuzzleId = "";
+// Global variable to store the completed puzzle data of type { string -> string }
+let completedPuzzleData = new Map<string, string>();
 
 interface Params {
   params: {
@@ -16,12 +18,22 @@ interface Params {
 }
 
 export const isPuzzleComplete = async (formData: FormData) => {
-  console.log(formData);
-  //TODO: fetch the correct data from the database and compare to the form data
+  const data = Object.fromEntries(formData.entries());
+
+  for (const [position, answer] of Object.entries(data)) {
+    if (position.startsWith("$ACTION")) continue;
+    if (completedPuzzleData.get(position) !== answer) {
+      console.log(position, "is incorrect");
+      return console.log("no win!");
+    }
+  }
+  return console.log("you won!");
 };
 
 export default async function CrosswordPage({ params }: Params) {
   const [theme, puzzleData] = await getCrosswordDataById(params.id);
+
+  // Set global puzzleData for use in isPuzzleComplete (server action)
 
   let puzzleMap = new Map<
     string,
@@ -41,16 +53,19 @@ export default async function CrosswordPage({ params }: Params) {
         ? "intersection"
         : word.orientation;
 
-      const isFirstLetter = i === 0;
+      const isFirstLetter = puzzleMap.get(position)?.firstLetter || i === 0;
 
       puzzleMap.set(position, {
         direction: direction,
         id: word.position,
         firstLetter: isFirstLetter,
       });
+
+      completedPuzzleData.set(position, word.answer[i]);
     });
   });
 
+  console.log(puzzleMap);
   return (
     <div className="flex items-center justify-center">
       <div>
