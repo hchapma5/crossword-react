@@ -23,27 +23,32 @@ export const isPuzzleComplete = async (formData: FormData) => {
 export default async function CrosswordPage({ params }: Params) {
   const [theme, puzzleData] = await getCrosswordDataById(params.id);
 
-  // Build a map of the puzzle data to serve the client
-  // TODO: need to either overload key comparison or use a string key
-  let puzzleMap = new Map<Position, { direction: Direction; id: number }>();
+  let puzzleMap = new Map<
+    string,
+    { direction: Direction; id: number; firstLetter: boolean }
+  >();
 
   puzzleData.result.forEach((word) => {
-    // Skip words without an orientation
     if (word.orientation === "none") return;
 
     word.answer.split("").forEach((_, i) => {
-      const position: Position =
+      const position =
         word.orientation === "across"
-          ? [word.starty, word.startx + i]
-          : [word.starty + i, word.startx];
+          ? `${word.starty},${word.startx + i}`
+          : `${word.starty + i},${word.startx}`;
 
-      // TODO: hanlde case where word already exists in the map (i.e. intersection)
+      //TODO: Reduce duplicate code
       if (puzzleMap.has(position)) {
-        console.log("this is an intersection", position);
+        puzzleMap.set(position, {
+          direction: "intersection",
+          id: word.position,
+          firstLetter: i === 0,
+        });
       } else {
         puzzleMap.set(position, {
           direction: word.orientation,
           id: word.position,
+          firstLetter: i === 0,
         });
       }
     });
