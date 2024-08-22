@@ -37,24 +37,19 @@ export default async function CrosswordPage({ params }: Params) {
           ? `${word.starty},${word.startx + i}`
           : `${word.starty + i},${word.startx}`;
 
-      //TODO: Reduce duplicate code
-      if (puzzleMap.has(position)) {
-        puzzleMap.set(position, {
-          direction: "intersection",
-          id: word.position,
-          firstLetter: i === 0,
-        });
-      } else {
-        puzzleMap.set(position, {
-          direction: word.orientation,
-          id: word.position,
-          firstLetter: i === 0,
-        });
-      }
+      const direction = puzzleMap.get(position)
+        ? "intersection"
+        : word.orientation;
+
+      const isFirstLetter = i === 0;
+
+      puzzleMap.set(position, {
+        direction: direction,
+        id: word.position,
+        firstLetter: isFirstLetter,
+      });
     });
   });
-
-  console.log(puzzleMap);
 
   return (
     <div className="flex items-center justify-center">
