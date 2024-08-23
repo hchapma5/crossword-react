@@ -17,6 +17,7 @@ interface Params {
   };
 }
 
+//TODO: Finish implementation of isPuzzleComplete function
 export const isPuzzleComplete = async (formData: FormData) => {
   const data = Object.fromEntries(formData.entries());
 
@@ -32,8 +33,6 @@ export const isPuzzleComplete = async (formData: FormData) => {
 
 export default async function CrosswordPage({ params }: Params) {
   const [theme, puzzleData] = await getCrosswordDataById(params.id);
-
-  // Set global puzzleData for use in isPuzzleComplete (server action)
 
   let puzzleMap = new Map<
     string,

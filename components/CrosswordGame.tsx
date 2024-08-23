@@ -12,13 +12,11 @@ interface CrosswordGameProps {
   map: Map<string, { direction: Direction; id: number; firstLetter: boolean }>;
 }
 
-//TODO: Finish implementating smooth navigation of component (i.e arrow keys, tab, etc)
 export default function CrosswordGame(props: CrosswordGameProps) {
   const { map, rows, cols } = props;
-  // const [selected, setSelected] = useState<Position>(positions[0].position);
-  // const [direction, setDirection] = useState<Direction>(
-  //   directions[`${selected[0]}-${selected[1]}`],
-  // );
+  const [selected, setSelected] = useState<Position>(
+    map.keys().next().value.split(",").map(Number),
+  );
 
   const layout = Array(rows).fill(Array(cols).fill(""));
 
@@ -35,18 +33,13 @@ export default function CrosswordGame(props: CrosswordGameProps) {
     [],
   );
 
-  // useEffect(() => {
-  //   const [row, col] = selected;
-  //   const input = inputRefs.current[row - 1][col - 1];
-  //   if (input) {
-  //     input.focus();
-  //   }
-  //   setDirection(
-  //     directions[`${row}-${col}`] === "intersection"
-  //       ? direction
-  //       : directions[`${row}-${col}`],
-  //   );
-  // }, [direction, directions, selected]);
+  useEffect(() => {
+    const [row, col] = selected;
+    const input = inputRefs.current[row - 1][col - 1];
+    if (input) {
+      input.focus();
+    }
+  }, [selected]);
 
   return (
     <form action={isPuzzleComplete}>
@@ -74,69 +67,60 @@ export default function CrosswordGame(props: CrosswordGameProps) {
                         type="text"
                         name={`${rowIndex + 1},${colIndex + 1}`}
                         id={`${rowIndex + 1},${colIndex + 1}`}
-                        // ref={setInputRef(rowIndex, colIndex)}
-                        // onChange={(e) => {
-                        //   e.target.value.match(/^[a-zA-Z]*$/)
-                        //     ? (e.target.value = e.target.value.toUpperCase())
-                        //     : (e.target.value = "");
-                        //   let nextPosition = selected;
-                        //   if (direction === "across") {
-                        //     nextPosition = [selected[0], selected[1] + 1];
-                        //   } else if (direction === "down") {
-                        //     nextPosition = [selected[0] + 1, selected[1]];
-                        //   }
-                        //   if (
-                        //     inputRefs.current[nextPosition[0] - 1] &&
-                        //     inputRefs.current[nextPosition[0] - 1][
-                        //       nextPosition[1] - 1
-                        //     ] &&
-                        //     e.target.value.length === 1
-                        //   )
-                        //     setSelected(nextPosition);
-                        // }}
-                        // onKeyDown={(e) => {
-                        //   let nextPosition = selected;
-                        //   if (e.key === "ArrowUp") {
-                        //     nextPosition = [selected[0] - 1, selected[1]];
-                        //   } else if (e.key === "ArrowDown") {
-                        //     nextPosition = [selected[0] + 1, selected[1]];
-                        //   } else if (e.key === "ArrowLeft") {
-                        //     nextPosition = [selected[0], selected[1] - 1];
-                        //   } else if (e.key === "ArrowRight") {
-                        //     nextPosition = [selected[0], selected[1] + 1];
-                        //   } else if (e.key === "Tab") {
-                        //     e.preventDefault(); // Prevent default tabbing behavior
-                        //     if (e.shiftKey) {
-                        //       // Shift + Tab
-                        //       if (direction === "across") {
-                        //         nextPosition = [selected[0], selected[1] - 1];
-                        //       } else if (direction === "down") {
-                        //         nextPosition = [selected[0] - 1, selected[1]];
-                        //       }
-                        //     } else {
-                        //       // Tab
-                        //       if (direction === "across") {
-                        //         nextPosition = [selected[0], selected[1] + 1];
-                        //       } else if (direction === "down") {
-                        //         nextPosition = [selected[0] + 1, selected[1]];
-                        //       }
-                        //     }
-                        //   }
-                        //   if (
-                        //     inputRefs.current[nextPosition[0] - 1] &&
-                        //     inputRefs.current[nextPosition[0] - 1][
-                        //       nextPosition[1] - 1
-                        //     ]
-                        //   )
-                        //     setSelected(nextPosition);
-                        // }}
-                        // onClick={() =>
-                        //   setSelected([rowIndex + 1, colIndex + 1])
-                        // }
-                        // // Handle Delete and Backspace
-                        // onSelect={(e) =>
-                        //   e.currentTarget.setSelectionRange(0, 1)
-                        // }
+                        ref={setInputRef(rowIndex, colIndex)}
+                        onChange={(e) => {
+                          e.target.value.match(/^[a-zA-Z]*$/)
+                            ? (e.target.value = e.target.value.toUpperCase())
+                            : (e.target.value = "");
+                          const direction = map.get(
+                            `${rowIndex + 1},${colIndex + 1}`,
+                          )?.direction;
+                          switch (direction) {
+                            case "across":
+                              setSelected([rowIndex + 1, colIndex + 2]);
+                              break;
+                            case "down":
+                              setSelected([rowIndex + 2, colIndex + 1]);
+                              break;
+                            case "intersection":
+                            /** TODO: Implement intersection logic
+                              If the previous cell direction is across and the cell to the right exists, go right
+                              If the previous cell direction is down and the cell below exists, go down
+                              if neither exist, go to the next cell (the next word starting cell)
+                              break;
+                              */
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          let nextPosition = selected;
+                          switch (e.key) {
+                            case "ArrowUp":
+                              nextPosition = [selected[0] - 1, selected[1]];
+                              break;
+                            case "ArrowDown":
+                              nextPosition = [selected[0] + 1, selected[1]];
+                              break;
+                            case "ArrowLeft":
+                              nextPosition = [selected[0], selected[1] - 1];
+                              break;
+                            case "ArrowRight":
+                              nextPosition = [selected[0], selected[1] + 1];
+                              break;
+                            case "Tab":
+                              e.preventDefault(); // Prevent default tabbing behavior
+                              //TODO: Implement tabbing behavior
+                              break;
+                          }
+                          if (map.has(nextPosition[0] + "," + nextPosition[1]))
+                            setSelected(nextPosition);
+                        }}
+                        onClick={() =>
+                          setSelected([rowIndex + 1, colIndex + 1])
+                        }
+                        // Handle Delete and Backspace
+                        onSelect={(e) =>
+                          e.currentTarget.setSelectionRange(0, 1)
+                        }
                         className={`h-full w-full bg-slate-50 text-center text-xl`}
                         maxLength={1}
                       />
