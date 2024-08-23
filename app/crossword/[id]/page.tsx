@@ -49,15 +49,20 @@ export default async function CrosswordPage({ params }: Params) {
           ? `${word.starty},${word.startx + i}`
           : `${word.starty + i},${word.startx}`;
 
+      const existing = puzzleMap.get(position);
+
       const direction = puzzleMap.get(position)
         ? "intersection"
         : word.orientation;
 
       const isFirstLetter = puzzleMap.get(position)?.firstLetter || i === 0;
 
+      const wordId =
+        existing && existing.firstLetter ? existing.id : word.position;
+
       puzzleMap.set(position, {
         direction: direction,
-        id: word.position,
+        id: wordId,
         firstLetter: isFirstLetter,
       });
 
