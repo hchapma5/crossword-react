@@ -34,50 +34,49 @@ export const isPuzzleComplete = async (formData: FormData) => {
 export default async function CrosswordPage({ params }: Params) {
   const [theme, puzzleData] = await getCrosswordDataById(params.id);
 
-  let puzzleMap = new Map<
-    string,
-    { direction: Direction; id: number; firstLetter: boolean }
-  >();
+  console.log(puzzleData.result);
 
-  puzzleData.result.forEach((word) => {
-    if (word.orientation === "none") return;
+  let positionMap = new Map<string, number | null>();
+  let wordArray: Array<{ direction: Direction; startingPosition: Position }> =
+    Array(
+      puzzleData.result.filter((word) => word.orientation !== "none").length,
+    );
 
-    word.answer.split("").forEach((_, i) => {
-      const position =
-        word.orientation === "across"
-          ? `${word.starty},${word.startx + i}`
-          : `${word.starty + i},${word.startx}`;
+  puzzleData.result
+    .filter((word) => word.orientation !== "none")
+    .forEach((word, i) => {
+      word.answer.split("").forEach((_, i) => {
+        const position =
+          word.orientation === "across"
+            ? `${word.starty},${word.startx + i}`
+            : `${word.starty + i},${word.startx}`;
 
-      const existing = puzzleMap.get(position);
+        const isFirstLetter = i === 0;
 
-      const direction = puzzleMap.get(position)
-        ? "intersection"
-        : word.orientation;
+        if (!positionMap.has(position) || isFirstLetter)
+          positionMap.set(position, isFirstLetter ? word.position : null);
 
-      const isFirstLetter = puzzleMap.get(position)?.firstLetter || i === 0;
-
-      const wordId =
-        existing && existing.firstLetter ? existing.id : word.position;
-
-      puzzleMap.set(position, {
-        direction: direction,
-        id: wordId,
-        firstLetter: isFirstLetter,
+        completedPuzzleData.set(position, word.answer[i]);
       });
 
-      completedPuzzleData.set(position, word.answer[i]);
+      wordArray[i] = {
+        direction: word.orientation,
+        startingPosition: [word.starty, word.startx],
+      };
     });
-  });
 
-  console.log(puzzleMap);
+  console.log(positionMap);
+  console.log(wordArray);
+
   return (
     <div className="flex items-center justify-center">
       <div>
         <h1 className="mb-4 text-2xl font-semibold">{theme as string}</h1>
         <CrosswordGame
-          cols={puzzleData.cols}
           rows={puzzleData.rows}
-          map={puzzleMap}
+          cols={puzzleData.cols}
+          wordArray={wordArray}
+          positionMap={positionMap}
         />
       </div>
       {/* <CrosswordClues clues={clues} /> */}
