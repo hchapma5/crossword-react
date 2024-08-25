@@ -36,11 +36,13 @@ export default async function CrosswordPage({ params }: Params) {
 
   console.log(puzzleData.result);
 
-  let positionMap = new Map<string, number | null>();
-  let wordArray: Array<{ direction: Direction; startingPosition: Position }> =
-    Array(
-      puzzleData.result.filter((word) => word.orientation !== "none").length,
-    );
+  let positionsMap = new Map<string, { id: number; firstLetter: boolean }>();
+  let navigationArray: Array<{
+    direction: Direction;
+    startingPosition: Position;
+  }> = Array(
+    puzzleData.result.filter((word) => word.orientation !== "none").length,
+  );
 
   puzzleData.result
     .filter((word) => word.orientation !== "none")
@@ -53,20 +55,20 @@ export default async function CrosswordPage({ params }: Params) {
 
         const isFirstLetter = i === 0;
 
-        if (!positionMap.has(position) || isFirstLetter)
-          positionMap.set(position, isFirstLetter ? word.position : null);
+        if (!positionsMap.has(position) || isFirstLetter)
+          positionsMap.set(position, {
+            id: word.position,
+            firstLetter: isFirstLetter,
+          });
 
         completedPuzzleData.set(position, word.answer[i]);
       });
 
-      wordArray[i] = {
+      navigationArray[i] = {
         direction: word.orientation,
         startingPosition: [word.starty, word.startx],
       };
     });
-
-  console.log(positionMap);
-  console.log(wordArray);
 
   return (
     <div className="flex items-center justify-center">
@@ -75,8 +77,8 @@ export default async function CrosswordPage({ params }: Params) {
         <CrosswordGame
           rows={puzzleData.rows}
           cols={puzzleData.cols}
-          wordArray={wordArray}
-          positionMap={positionMap}
+          navigationArray={navigationArray}
+          positionsMap={positionsMap}
         />
       </div>
       {/* <CrosswordClues clues={clues} /> */}

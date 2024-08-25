@@ -4,23 +4,24 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { Position, Direction } from "@/types/types";
 import { Button } from "./ui/button";
 import { isPuzzleComplete } from "@/app/crossword/[id]/page";
-import next from "next";
 import { set } from "react-hook-form";
 
 interface CrosswordGameProps {
   rows: number;
   cols: number;
-  wordArray: Array<{ direction: Direction; startingPosition: Position }>;
-  positionMap: Map<string, number | null>;
+  navigationArray: Array<{ direction: Direction; startingPosition: Position }>;
+  positionsMap: Map<string, { id: number; firstLetter: boolean }>;
 }
 
 export default function CrosswordGame(props: CrosswordGameProps) {
-  const { rows, cols, wordArray, positionMap } = props;
+  const { rows, cols, navigationArray, positionsMap } = props;
   const [selected, setSelected] = useState<Position>(
-    wordArray[0].startingPosition,
+    navigationArray[0].startingPosition,
   );
-  const [currentWord, setCurrentWord] = useState<number>(0);
-  const [direction, setDirection] = useState<Direction>(wordArray[0].direction);
+  const [currentWordId, setCurrentWordId] = useState<number>(0);
+  const [direction, setDirection] = useState<Direction>(
+    navigationArray[0].direction,
+  );
 
   const inputRefs = useRef<Array<Array<HTMLInputElement | null>>>(
     Array.from({ length: rows }, () => Array(cols).fill(null)),
@@ -35,7 +36,6 @@ export default function CrosswordGame(props: CrosswordGameProps) {
     [],
   );
 
-  //TODO: Handle care nextPosition ref already filled in with a value AND last word in the list is selected
   const setNextPosition = () => {
     let nextPosition = selected;
     switch (direction) {
@@ -46,12 +46,15 @@ export default function CrosswordGame(props: CrosswordGameProps) {
         nextPosition = [selected[0] + 1, selected[1]];
         break;
     }
-    if (positionMap.has(nextPosition[0] + "," + nextPosition[1]))
+    if (positionsMap.has(nextPosition[0] + "," + nextPosition[1])) {
       setSelected(nextPosition);
-    else {
-      setCurrentWord(currentWord + 1);
-      setDirection(wordArray[currentWord + 1].direction);
-      setSelected(wordArray[currentWord + 1].startingPosition);
+    } else {
+      // If the next position is not a valid position, move to the next word
+      if (currentWordId === navigationArray.length - 1) return;
+      const nextWord = navigationArray[currentWordId + 1];
+      setSelected(nextWord.startingPosition);
+      setCurrentWordId(currentWordId + 1);
+      setDirection(nextWord.direction);
     }
   };
 
@@ -74,16 +77,24 @@ export default function CrosswordGame(props: CrosswordGameProps) {
                 {row.map((_: any, colIndex: number) => (
                   <td
                     key={`${rowIndex},${colIndex}`}
-                    className={`relative aspect-square h-12 w-12 border border-black text-center ${positionMap.has(`${rowIndex + 1},${colIndex + 1}`) ? "" : "invisible border-none"}`}
+                    className={`relative aspect-square h-12 w-12 border border-black text-center ${positionsMap.has(`${rowIndex + 1},${colIndex + 1}`) ? "" : "invisible border-none"}`}
                   >
                     <>
-                      <label
-                        htmlFor="word-position"
-                        className="absolute flex items-center justify-center font-semibold"
-                      >
-                        {positionMap.get(`${rowIndex + 1},${colIndex + 1}`)}
-                      </label>
-                      {positionMap.has(`${rowIndex + 1},${colIndex + 1}`) && (
+                      {positionsMap.has(`${rowIndex + 1},${colIndex + 1}`) &&
+                        positionsMap.get(`${rowIndex + 1},${colIndex + 1}`)
+                          ?.firstLetter && (
+                          <label
+                            htmlFor="word-position"
+                            className="absolute flex items-center justify-center font-semibold"
+                          >
+                            {
+                              positionsMap.get(
+                                `${rowIndex + 1},${colIndex + 1}`,
+                              )?.id
+                            }
+                          </label>
+                        )}
+                      {positionsMap.has(`${rowIndex + 1},${colIndex + 1}`) && (
                         <input
                           type="text"
                           name={`${rowIndex + 1},${colIndex + 1}`}
@@ -116,7 +127,7 @@ export default function CrosswordGame(props: CrosswordGameProps) {
                                 break;
                             }
                             if (
-                              positionMap.has(
+                              positionsMap.has(
                                 nextPosition[0] + "," + nextPosition[1],
                               )
                             )
@@ -124,6 +135,18 @@ export default function CrosswordGame(props: CrosswordGameProps) {
                           }}
                           onClick={() => {
                             setSelected([rowIndex + 1, colIndex + 1]);
+                            setCurrentWordId(
+                              positionsMap.get(
+                                `${rowIndex + 1},${colIndex + 1}`,
+                              )!.id - 1,
+                            );
+                            setDirection(
+                              navigationArray[
+                                positionsMap.get(
+                                  `${rowIndex + 1},${colIndex + 1}`,
+                                )!.id - 1
+                              ].direction,
+                            );
                           }}
                           // Handle Delete and Backspace
                           onSelect={(e) =>
