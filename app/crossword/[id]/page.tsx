@@ -6,7 +6,6 @@ import { getCrosswordDataById } from "@/db/query";
 import Link from "next/link";
 import CrosswordGame from "@/components/CrosswordGame";
 import CrosswordClues from "@/components/CrosswordClues";
-import { is } from "drizzle-orm";
 
 // Global variable to store the completed puzzle data of type { string -> string }
 let completedPuzzleData = new Map<string, string>();
@@ -34,19 +33,31 @@ export const isPuzzleComplete = async (formData: FormData) => {
 export default async function CrosswordPage({ params }: Params) {
   const [theme, puzzleData] = await getCrosswordDataById(params.id);
 
-  console.log(puzzleData.result);
+  const puzzleWordCount = puzzleData.result.filter(
+    (word) => word.orientation !== "none",
+  ).length;
+
+  let clues: Array<{ clue: string; direction: Direction; id: number }> =
+    Array(puzzleWordCount);
 
   let positionsMap = new Map<string, { id: number; firstLetter: boolean }>();
+
   let navigationArray: Array<{
     direction: Direction;
     startingPosition: Position;
-  }> = Array(
-    puzzleData.result.filter((word) => word.orientation !== "none").length,
-  );
+  }> = Array(puzzleWordCount);
+
+  //TODO: Refactor this code to be more readable
 
   puzzleData.result
     .filter((word) => word.orientation !== "none")
     .forEach((word, i) => {
+      clues[i] = {
+        clue: word.clue,
+        direction: word.orientation,
+        id: word.position,
+      };
+
       word.answer.split("").forEach((_, i) => {
         const position =
           word.orientation === "across"
@@ -64,11 +75,19 @@ export default async function CrosswordPage({ params }: Params) {
         completedPuzzleData.set(position, word.answer[i]);
       });
 
-      navigationArray[i] = {
-        direction: word.orientation,
-        startingPosition: [word.starty, word.startx],
-      };
+      if (navigationArray[word.position - 1] === undefined) {
+        navigationArray[word.position - 1] = {
+          direction: word.orientation,
+          startingPosition: [word.starty, word.startx],
+        };
+        return;
+      }
+      //TODO: Intersection
+      navigationArray[word.position - 1].direction = "intersection";
     });
+
+  // console.log(puzzleData.result);
+  // console.log(navigationArray);
 
   return (
     <div className="flex items-center justify-center">
@@ -81,10 +100,10 @@ export default async function CrosswordPage({ params }: Params) {
           positionsMap={positionsMap}
         />
       </div>
-      {/* <CrosswordClues clues={clues} /> */}
-      {/* <Button>
+      <CrosswordClues clues={clues} />
+      <Button>
         <Link href="/">Get a new puzzle</Link>
-      </Button> */}
+      </Button>
     </div>
   );
 }

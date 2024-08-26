@@ -4,7 +4,6 @@ import { useState, useRef, useCallback, useEffect } from "react";
 import { Position, Direction } from "@/types/types";
 import { Button } from "./ui/button";
 import { isPuzzleComplete } from "@/app/crossword/[id]/page";
-import { set } from "react-hook-form";
 
 interface CrosswordGameProps {
   rows: number;
@@ -12,7 +11,9 @@ interface CrosswordGameProps {
   navigationArray: Array<{ direction: Direction; startingPosition: Position }>;
   positionsMap: Map<string, { id: number; firstLetter: boolean }>;
 }
-
+//TODO: Implement Submit behavior
+//TODO: First letter is an intersection
+//TODO: Arrow key not updating word/direction
 export default function CrosswordGame(props: CrosswordGameProps) {
   const { rows, cols, navigationArray, positionsMap } = props;
   const [selected, setSelected] = useState<Position>(
@@ -45,6 +46,8 @@ export default function CrosswordGame(props: CrosswordGameProps) {
       case "down":
         nextPosition = [selected[0] + 1, selected[1]];
         break;
+      case "intersection":
+      //TODO: Handle case when the first letter is an intersection
     }
     if (positionsMap.has(nextPosition[0] + "," + nextPosition[1])) {
       setSelected(nextPosition);
@@ -121,9 +124,48 @@ export default function CrosswordGame(props: CrosswordGameProps) {
                               case "ArrowRight":
                                 nextPosition = [selected[0], selected[1] + 1];
                                 break;
+                              case "Backspace" || "Delete": // TODO: Refactor this later
+                                e.preventDefault();
+                                inputRefs.current[selected[0] - 1][
+                                  selected[1] - 1
+                                ]!.value = "";
+
+                                direction === "across"
+                                  ? (nextPosition = [
+                                      selected[0],
+                                      selected[1] - 1,
+                                    ])
+                                  : (nextPosition = [
+                                      selected[0] - 1,
+                                      selected[1],
+                                    ]);
+                                break;
+
                               case "Tab":
                                 e.preventDefault(); // Prevent default tabbing behavior
-                                //TODO: Implement tabbing behavior
+                                if (e.shiftKey) {
+                                  // Shift + Tab
+                                  direction === "across"
+                                    ? (nextPosition = [
+                                        selected[0],
+                                        selected[1] - 1,
+                                      ])
+                                    : (nextPosition = [
+                                        selected[0] - 1,
+                                        selected[1],
+                                      ]);
+                                } else {
+                                  // Tab
+                                  direction === "across"
+                                    ? (nextPosition = [
+                                        selected[0],
+                                        selected[1] + 1,
+                                      ])
+                                    : (nextPosition = [
+                                        selected[0] + 1,
+                                        selected[1],
+                                      ]);
+                                }
                                 break;
                             }
                             if (
