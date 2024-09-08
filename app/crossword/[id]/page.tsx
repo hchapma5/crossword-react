@@ -82,7 +82,7 @@ export default async function CrosswordPage({ params }: Params) {
   return (
     <form
       action={isPuzzleComplete}
-      className="flex w-3/4 flex-col items-center justify-center gap-4"
+      className="flex h-[750px] w-3/4 flex-col items-center gap-4"
     >
       <h1 className="py-4 text-center text-5xl font-semibold">{theme}</h1>
       <div className="flex flex-grow">
@@ -91,11 +91,11 @@ export default async function CrosswordPage({ params }: Params) {
           cols={puzzleData.cols}
           navigationArray={navigationArray}
           positionsMap={positionsMap}
-          className="w-2/3"
+          className="h-fit w-2/3"
         />
-        <CrosswordClues clues={clues} className="w-1/3" />
+        <CrosswordClues clues={clues} className="h-full w-1/3" />
       </div>
-      <div className="flex w-full gap-4">
+      <div className="flex w-full items-center justify-evenly">
         <Button type="submit">Submit</Button>
         <Button>
           <Link href="/">Get a new puzzle</Link>

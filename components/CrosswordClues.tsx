@@ -18,17 +18,19 @@ interface ClueListProps {
 }
 
 const ClueList: React.FC<ClueListProps> = ({ title, clues }) => (
-  <div className="mb-4">
-    <h2 className="mb-2 text-xl font-bold">{title}</h2>
-    <ol className="list-none pl-0">
+  <>
+    <h2 className="mb-2 text-lg font-bold lg:text-2xl">{title}</h2>
+    <ol className="flex list-none flex-col gap-y-2 pl-0">
       {clues.map((clue) => (
-        <li key={clue.id} className="mb-2 flex gap-4">
-          <span className="w-8 font-semibold text-gray-500">{clue.id}</span>
+        <li key={clue.id} className="flex gap-2">
+          <span className="w-6 flex-shrink-0 font-semibold text-gray-500">
+            {clue.id}.
+          </span>
           <span>{clue.clue}</span>
         </li>
       ))}
     </ol>
-  </div>
+  </>
 );
 
 export default function CrosswordClues({ clues, className }: CluesProps) {
@@ -38,7 +40,9 @@ export default function CrosswordClues({ clues, className }: CluesProps) {
       .sort((a, b) => a.id - b.id);
 
   return (
-    <div className={`flex flex-col gap-4 p-8 ${className}`}>
+    <div
+      className={`flex flex-col gap-4 rounded-lg p-4 text-xs md:text-sm xl:text-base ${className}`}
+    >
       <ClueList title="Across" clues={sortedClues("across")} />
       <ClueList title="Down" clues={sortedClues("down")} />
     </div>

@@ -148,7 +148,7 @@ export default function CrosswordGame({
       style={{
         gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
       }}
-      className={`grid gap-[1px] ${className}`}
+      className={`grid h-fit gap-[1px] ${className}`}
     >
       {Array.from({ length: rows * cols }, (_, index) => {
         const rowIndex = Math.floor(index / cols);
