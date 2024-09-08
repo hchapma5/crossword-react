@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Button } from "./ui/button";
-import { isPuzzleComplete } from "@/app/crossword/[id]/page";
 
 interface CrosswordGameProps {
   rows: number;
@@ -12,6 +10,7 @@ interface CrosswordGameProps {
     string,
     { indices: { wordIndex: number; letterIndex: number }[]; id?: number }
   >;
+  className?: string;
 }
 
 export default function CrosswordGame({
@@ -19,6 +18,7 @@ export default function CrosswordGame({
   cols,
   navigationArray,
   positionsMap,
+  className,
 }: CrosswordGameProps) {
   const [currentPosition, setCurrentPosition] = useState({
     wordIndex: 0,
@@ -144,54 +144,51 @@ export default function CrosswordGame({
   }, [currentPosition, navigationArray]);
 
   return (
-    <form action={isPuzzleComplete}>
-      <div
-        style={{
-          gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-        }}
-        className="grid gap-[1px]"
-      >
-        {Array.from({ length: rows * cols }, (_, index) => {
-          const rowIndex = Math.floor(index / cols);
-          const colIndex = index % cols;
-          const position = `${rowIndex},${colIndex}`;
-          const cellData = positionsMap.get(position);
+    <div
+      style={{
+        gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+      }}
+      className={`grid gap-[1px] ${className}`}
+    >
+      {Array.from({ length: rows * cols }, (_, index) => {
+        const rowIndex = Math.floor(index / cols);
+        const colIndex = index % cols;
+        const position = `${rowIndex},${colIndex}`;
+        const cellData = positionsMap.get(position);
 
-          if (!cellData) return <div key={position} />;
+        if (!cellData) return <div key={position} />;
 
-          const isCurrentWord = cellData.indices.some(({ wordIndex }) => {
-            return wordIndex === currentPosition.wordIndex;
-          });
+        const isCurrentWord = cellData.indices.some(({ wordIndex }) => {
+          return wordIndex === currentPosition.wordIndex;
+        });
 
-          return (
-            <div
-              key={position}
-              className="relative aspect-square outline outline-1 outline-black"
-            >
-              {cellData.id && (
-                <label className="absolute left-0 top-0 text-xs font-semibold">
-                  {cellData.id}
-                </label>
-              )}
-              <input
-                type="text"
-                name={position}
-                id={position}
-                ref={setInputRef(position)}
-                onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
-                onClick={handleClick}
-                autoCorrect="off"
-                autoComplete="off"
-                onSelect={(e) => e.currentTarget.setSelectionRange(0, 1)}
-                className={`h-full w-full text-center text-xl font-semibold ${isCurrentWord ? "bg-blue-100" : "bg-slate-100"}`}
-                maxLength={1}
-              />
-            </div>
-          );
-        })}
-      </div>
-      <Button type="submit">Submit</Button>f
-    </form>
+        return (
+          <div
+            key={position}
+            className="relative aspect-square outline outline-1 outline-black"
+          >
+            {cellData.id && (
+              <label className="absolute left-0 top-0 text-xs font-semibold">
+                {cellData.id}
+              </label>
+            )}
+            <input
+              type="text"
+              name={position}
+              id={position}
+              ref={setInputRef(position)}
+              onChange={handleInputChange}
+              onKeyDown={handleKeyDown}
+              onClick={handleClick}
+              autoCorrect="off"
+              autoComplete="off"
+              onSelect={(e) => e.currentTarget.setSelectionRange(0, 1)}
+              className={`h-full w-full text-center text-xl font-semibold ${isCurrentWord ? "bg-blue-100" : "bg-slate-100"}`}
+              maxLength={1}
+            />
+          </div>
+        );
+      })}
+    </div>
   );
 }

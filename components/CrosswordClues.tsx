@@ -1,45 +1,46 @@
+import React from "react";
 import { Direction } from "@/types/types";
-import { Card, CardContent, CardDescription, CardTitle } from "./ui/card";
 
-interface CluesProps {
-  clues: {
-    clue: string;
-    direction: Direction;
-    id: number;
-  }[];
+interface Clue {
+  clue: string;
+  direction: Direction;
+  id: number;
 }
 
-export default function CrosswordClues(props: CluesProps) {
-  const { clues } = props;
+interface CluesProps {
+  clues: Clue[];
+  className?: string;
+}
 
-  const acrossClues = clues
-    .filter((clue) => clue.direction === "across")
-    .sort((a, b) => a.id - b.id);
-  const downClues = clues
-    .filter((clue) => clue.direction === "down")
-    .sort((a, b) => a.id - b.id);
+interface ClueListProps {
+  title: string;
+  clues: Clue[];
+}
+
+const ClueList: React.FC<ClueListProps> = ({ title, clues }) => (
+  <div className="mb-4">
+    <h2 className="mb-2 text-xl font-bold">{title}</h2>
+    <ol className="list-none pl-0">
+      {clues.map((clue) => (
+        <li key={clue.id} className="mb-2 flex gap-4">
+          <span className="w-8 font-semibold text-gray-500">{clue.id}</span>
+          <span>{clue.clue}</span>
+        </li>
+      ))}
+    </ol>
+  </div>
+);
+
+export default function CrosswordClues({ clues, className }: CluesProps) {
+  const sortedClues = (direction: Direction) =>
+    clues
+      .filter((clue) => clue.direction === direction)
+      .sort((a, b) => a.id - b.id);
 
   return (
-    <Card className="flex flex-col gap-4 bg-pink-300 p-8">
-      <CardTitle>Clues</CardTitle>
-      <CardDescription>Across</CardDescription>
-      <CardContent>
-        {acrossClues.map((clue) => (
-          <div key={clue.id} className="flex gap-4">
-            <p className="font-semibold text-gray-500">{clue.id}</p>
-            <p>{clue.clue}</p>
-          </div>
-        ))}
-      </CardContent>
-      <CardDescription>Down</CardDescription>
-      <CardContent>
-        {downClues.map((clue) => (
-          <div key={clue.id} className="flex gap-4">
-            <p className="font-semibold text-gray-500">{clue.id}</p>
-            <p>{clue.clue}</p>
-          </div>
-        ))}
-      </CardContent>
-    </Card>
+    <div className={`flex flex-col gap-4 p-8 ${className}`}>
+      <ClueList title="Across" clues={sortedClues("across")} />
+      <ClueList title="Down" clues={sortedClues("down")} />
+    </div>
   );
 }

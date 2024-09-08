@@ -80,20 +80,27 @@ export default async function CrosswordPage({ params }: Params) {
   console.log(positionsMap);
 
   return (
-    <div className="flex items-center justify-center">
-      <div>
-        <h1 className="mb-4 text-2xl font-semibold">{theme as string}</h1>
+    <form
+      action={isPuzzleComplete}
+      className="flex w-3/4 flex-col items-center justify-center gap-4"
+    >
+      <h1 className="py-4 text-center text-5xl font-semibold">{theme}</h1>
+      <div className="flex flex-grow">
         <CrosswordGame
           rows={puzzleData.rows}
           cols={puzzleData.cols}
           navigationArray={navigationArray}
           positionsMap={positionsMap}
+          className="w-2/3"
         />
+        <CrosswordClues clues={clues} className="w-1/3" />
       </div>
-      <CrosswordClues clues={clues} />
-      {/* <Button>
-        <Link href="/">Get a new puzzle</Link>
-      </Button> */}
-    </div>
+      <div className="flex w-full gap-4">
+        <Button type="submit">Submit</Button>
+        <Button>
+          <Link href="/">Get a new puzzle</Link>
+        </Button>
+      </div>
+    </form>
   );
 }
