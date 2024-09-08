@@ -27,7 +27,7 @@ export default function RootLayout({
       <body
         className={cn("bg-background font-sans antialiased", fontSans.variable)}
       >
-        <main className="flex min-h-screen flex-col items-center justify-center bg-[#fffcfc]">
+        <main className="min-w-screen flex min-h-screen flex-col items-center justify-between bg-white pt-[4rem] dark:bg-black">
           {children}
         </main>
       </body>

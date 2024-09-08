@@ -1,211 +1,197 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
-import { Position, Direction } from "@/types/types";
 import { Button } from "./ui/button";
 import { isPuzzleComplete } from "@/app/crossword/[id]/page";
 
 interface CrosswordGameProps {
   rows: number;
   cols: number;
-  navigationArray: Array<{ direction: Direction; startingPosition: Position }>;
-  positionsMap: Map<string, { id: number; firstLetter: boolean }>;
+  navigationArray: Array<Array<string>>;
+  positionsMap: Map<
+    string,
+    { indices: { wordIndex: number; letterIndex: number }[]; id?: number }
+  >;
 }
-//TODO: Implement Submit behavior
-//TODO: First letter is an intersection
-//TODO: Arrow key not updating word/direction
-export default function CrosswordGame(props: CrosswordGameProps) {
-  const { rows, cols, navigationArray, positionsMap } = props;
-  const [selected, setSelected] = useState<Position>(
-    navigationArray[0].startingPosition,
-  );
-  const [currentWordId, setCurrentWordId] = useState<number>(0);
-  const [direction, setDirection] = useState<Direction>(
-    navigationArray[0].direction,
-  );
 
-  const inputRefs = useRef<Array<Array<HTMLInputElement | null>>>(
-    Array.from({ length: rows }, () => Array(cols).fill(null)),
-  );
+export default function CrosswordGame({
+  rows,
+  cols,
+  navigationArray,
+  positionsMap,
+}: CrosswordGameProps) {
+  const [currentPosition, setCurrentPosition] = useState({
+    wordIndex: 0,
+    letterIndex: 0,
+  });
+  const inputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
 
   const setInputRef = useCallback(
-    (rowIndex: number, colIndex: number) => (el: HTMLInputElement | null) => {
-      if (inputRefs.current) {
-        inputRefs.current[rowIndex][colIndex] = el;
+    (position: string) => (el: HTMLInputElement | null) => {
+      if (el && inputRefs.current) {
+        inputRefs.current.set(position, el);
       }
     },
     [],
   );
 
-  const setNextPosition = () => {
-    let nextPosition = selected;
-    switch (direction) {
-      case "across":
-        nextPosition = [selected[0], selected[1] + 1];
-        break;
-      case "down":
-        nextPosition = [selected[0] + 1, selected[1]];
-        break;
-      case "intersection":
-      //TODO: Handle case when the first letter is an intersection
-    }
-    if (positionsMap.has(nextPosition[0] + "," + nextPosition[1])) {
-      setSelected(nextPosition);
-    } else {
-      // If the next position is not a valid position, move to the next word
-      if (currentWordId === navigationArray.length - 1) return;
-      const nextWord = navigationArray[currentWordId + 1];
-      setSelected(nextWord.startingPosition);
-      setCurrentWordId(currentWordId + 1);
-      setDirection(nextWord.direction);
-    }
-  };
+  const moveToNextPosition = useCallback(() => {
+    setCurrentPosition((prev) => {
+      if (prev.letterIndex < navigationArray[prev.wordIndex].length - 1) {
+        return { ...prev, letterIndex: prev.letterIndex + 1 };
+      } else if (prev.wordIndex < navigationArray.length - 1) {
+        return { wordIndex: prev.wordIndex + 1, letterIndex: 0 };
+      }
+      return prev;
+    });
+  }, [navigationArray]);
+
+  const handleInputChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = e.target.value.toUpperCase();
+      e.target.value = value.match(/^[A-Z]$/) ? value : "";
+      if (value) moveToNextPosition();
+    },
+    [moveToNextPosition],
+  );
+
+  const handleClick = useCallback(
+    (e: React.MouseEvent<HTMLInputElement>) => {
+      const position = positionsMap.get(e.currentTarget.id)!.indices;
+      const { wordIndex, letterIndex } =
+        position[0].wordIndex === currentPosition.wordIndex
+          ? position[1]
+          : position[0];
+      setCurrentPosition({
+        wordIndex: wordIndex,
+        letterIndex: letterIndex,
+      });
+    },
+    [currentPosition, positionsMap],
+  );
+
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLInputElement>) => {
+      switch (e.key) {
+        case "Backspace":
+          e.preventDefault();
+          e.currentTarget.value = "";
+          setCurrentPosition((prev) => ({
+            ...prev,
+            letterIndex: Math.max(0, prev.letterIndex - 1),
+          }));
+          break;
+        case "Tab":
+          e.preventDefault();
+          setCurrentPosition((prev) => ({
+            ...prev,
+            letterIndex: e.shiftKey
+              ? Math.max(0, prev.letterIndex - 1)
+              : Math.min(
+                  navigationArray[prev.wordIndex].length - 1,
+                  prev.letterIndex + 1,
+                ),
+          }));
+          break;
+        case "ArrowUp":
+        case "ArrowDown":
+        case "ArrowLeft":
+        case "ArrowRight":
+          e.preventDefault();
+          const [currentRow, currentCol] = e.currentTarget.id
+            .split(",")
+            .map(Number);
+          let nextRow = currentRow;
+          let nextCol = currentCol;
+
+          switch (e.key) {
+            case "ArrowUp":
+              nextRow = Math.max(0, currentRow - 1);
+              break;
+            case "ArrowDown":
+              nextRow = Math.min(rows - 1, currentRow + 1);
+              break;
+            case "ArrowLeft":
+              nextCol = Math.max(0, currentCol - 1);
+              break;
+            case "ArrowRight":
+              nextCol = Math.min(cols - 1, currentCol + 1);
+              break;
+          }
+
+          const nextCellId = `${nextRow},${nextCol}`;
+          const nextCell = document.getElementById(
+            nextCellId,
+          ) as HTMLInputElement;
+          if (nextCell) {
+            handleClick({
+              currentTarget: nextCell,
+            } as React.MouseEvent<HTMLInputElement>);
+          }
+          break;
+        case " ":
+          e.preventDefault();
+          break;
+      }
+    },
+    [navigationArray, rows, cols, handleClick],
+  );
 
   useEffect(() => {
-    const [row, col] = selected;
-    const input = inputRefs.current[row - 1][col - 1];
-    if (input) {
-      input.focus();
-    }
-  }, [selected]);
+    const selectedCell =
+      navigationArray[currentPosition.wordIndex][currentPosition.letterIndex];
+    inputRefs.current.get(selectedCell)?.focus();
+  }, [currentPosition, navigationArray]);
 
   return (
     <form action={isPuzzleComplete}>
-      <table className="border-collapse">
-        <tbody>
-          {Array(rows)
-            .fill(Array(cols).fill(""))
-            .map((row, rowIndex) => (
-              <tr key={`row-${rowIndex}`}>
-                {row.map((_: any, colIndex: number) => (
-                  <td
-                    key={`${rowIndex},${colIndex}`}
-                    className={`relative aspect-square h-12 w-12 border border-black text-center ${positionsMap.has(`${rowIndex + 1},${colIndex + 1}`) ? "" : "invisible border-none"}`}
-                  >
-                    <>
-                      {positionsMap.has(`${rowIndex + 1},${colIndex + 1}`) &&
-                        positionsMap.get(`${rowIndex + 1},${colIndex + 1}`)
-                          ?.firstLetter && (
-                          <label
-                            htmlFor="word-position"
-                            className="absolute flex items-center justify-center font-semibold"
-                          >
-                            {
-                              positionsMap.get(
-                                `${rowIndex + 1},${colIndex + 1}`,
-                              )?.id
-                            }
-                          </label>
-                        )}
-                      {positionsMap.has(`${rowIndex + 1},${colIndex + 1}`) && (
-                        <input
-                          type="text"
-                          name={`${rowIndex + 1},${colIndex + 1}`}
-                          id={`${rowIndex + 1},${colIndex + 1}`}
-                          ref={setInputRef(rowIndex, colIndex)}
-                          onChange={(e) => {
-                            e.target.value.match(/^[a-zA-Z]*$/)
-                              ? (e.target.value = e.target.value.toUpperCase())
-                              : (e.target.value = "");
-                            setNextPosition();
-                          }}
-                          onKeyDown={(e) => {
-                            let nextPosition = selected;
-                            switch (e.key) {
-                              case "ArrowUp":
-                                nextPosition = [selected[0] - 1, selected[1]];
-                                break;
-                              case "ArrowDown":
-                                nextPosition = [selected[0] + 1, selected[1]];
-                                break;
-                              case "ArrowLeft":
-                                nextPosition = [selected[0], selected[1] - 1];
-                                break;
-                              case "ArrowRight":
-                                nextPosition = [selected[0], selected[1] + 1];
-                                break;
-                              case "Backspace" || "Delete": // TODO: Refactor this later
-                                e.preventDefault();
-                                inputRefs.current[selected[0] - 1][
-                                  selected[1] - 1
-                                ]!.value = "";
+      <div
+        style={{
+          gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+        }}
+        className="grid gap-[1px]"
+      >
+        {Array.from({ length: rows * cols }, (_, index) => {
+          const rowIndex = Math.floor(index / cols);
+          const colIndex = index % cols;
+          const position = `${rowIndex},${colIndex}`;
+          const cellData = positionsMap.get(position);
 
-                                direction === "across"
-                                  ? (nextPosition = [
-                                      selected[0],
-                                      selected[1] - 1,
-                                    ])
-                                  : (nextPosition = [
-                                      selected[0] - 1,
-                                      selected[1],
-                                    ]);
-                                break;
+          if (!cellData) return <div key={position} />;
 
-                              case "Tab":
-                                e.preventDefault(); // Prevent default tabbing behavior
-                                if (e.shiftKey) {
-                                  // Shift + Tab
-                                  direction === "across"
-                                    ? (nextPosition = [
-                                        selected[0],
-                                        selected[1] - 1,
-                                      ])
-                                    : (nextPosition = [
-                                        selected[0] - 1,
-                                        selected[1],
-                                      ]);
-                                } else {
-                                  // Tab
-                                  direction === "across"
-                                    ? (nextPosition = [
-                                        selected[0],
-                                        selected[1] + 1,
-                                      ])
-                                    : (nextPosition = [
-                                        selected[0] + 1,
-                                        selected[1],
-                                      ]);
-                                }
-                                break;
-                            }
-                            if (
-                              positionsMap.has(
-                                nextPosition[0] + "," + nextPosition[1],
-                              )
-                            )
-                              setSelected(nextPosition);
-                          }}
-                          onClick={() => {
-                            setSelected([rowIndex + 1, colIndex + 1]);
-                            setCurrentWordId(
-                              positionsMap.get(
-                                `${rowIndex + 1},${colIndex + 1}`,
-                              )!.id - 1,
-                            );
-                            setDirection(
-                              navigationArray[
-                                positionsMap.get(
-                                  `${rowIndex + 1},${colIndex + 1}`,
-                                )!.id - 1
-                              ].direction,
-                            );
-                          }}
-                          // Handle Delete and Backspace
-                          onSelect={(e) =>
-                            e.currentTarget.setSelectionRange(0, 1)
-                          }
-                          className={`h-full w-full bg-slate-50 text-center text-xl`}
-                          maxLength={1}
-                        />
-                      )}
-                    </>
-                  </td>
-                ))}
-              </tr>
-            ))}
-        </tbody>
-      </table>
-      <Button type="submit">Submit</Button>
+          const isCurrentWord = cellData.indices.some(({ wordIndex }) => {
+            return wordIndex === currentPosition.wordIndex;
+          });
+
+          return (
+            <div
+              key={position}
+              className="relative aspect-square outline outline-1 outline-black"
+            >
+              {cellData.id && (
+                <label className="absolute left-0 top-0 text-xs font-semibold">
+                  {cellData.id}
+                </label>
+              )}
+              <input
+                type="text"
+                name={position}
+                id={position}
+                ref={setInputRef(position)}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                onClick={handleClick}
+                autoCorrect="off"
+                autoComplete="off"
+                onSelect={(e) => e.currentTarget.setSelectionRange(0, 1)}
+                className={`h-full w-full text-center text-xl font-semibold ${isCurrentWord ? "bg-blue-100" : "bg-slate-100"}`}
+                maxLength={1}
+              />
+            </div>
+          );
+        })}
+      </div>
+      <Button type="submit">Submit</Button>f
     </form>
   );
 }

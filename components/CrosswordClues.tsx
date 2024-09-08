@@ -12,11 +12,15 @@ interface CluesProps {
 export default function CrosswordClues(props: CluesProps) {
   const { clues } = props;
 
-  const acrossClues = clues.filter((clue) => clue.direction === "across");
-  const downClues = clues.filter((clue) => clue.direction === "down");
+  const acrossClues = clues
+    .filter((clue) => clue.direction === "across")
+    .sort((a, b) => a.id - b.id);
+  const downClues = clues
+    .filter((clue) => clue.direction === "down")
+    .sort((a, b) => a.id - b.id);
 
   return (
-    <Card className="flex w-1/4 flex-col gap-4 p-4">
+    <Card className="flex flex-col gap-4 bg-pink-300 p-8">
       <CardTitle>Clues</CardTitle>
       <CardDescription>Across</CardDescription>
       <CardContent>

@@ -7,7 +7,6 @@ import Link from "next/link";
 import CrosswordGame from "@/components/CrosswordGame";
 import CrosswordClues from "@/components/CrosswordClues";
 
-// Global variable to store the completed puzzle data of type { string -> string }
 let completedPuzzleData = new Map<string, string>();
 
 interface Params {
@@ -33,61 +32,52 @@ export const isPuzzleComplete = async (formData: FormData) => {
 export default async function CrosswordPage({ params }: Params) {
   const [theme, puzzleData] = await getCrosswordDataById(params.id);
 
-  const puzzleWordCount = puzzleData.result.filter(
-    (word) => word.orientation !== "none",
-  ).length;
+  let clues: Array<{ clue: string; direction: Direction; id: number }> = [];
 
-  let clues: Array<{ clue: string; direction: Direction; id: number }> =
-    Array(puzzleWordCount);
+  let positionsMap = new Map<
+    string,
+    { indices: { wordIndex: number; letterIndex: number }[]; id?: number }
+  >();
 
-  let positionsMap = new Map<string, { id: number; firstLetter: boolean }>();
-
-  let navigationArray: Array<{
-    direction: Direction;
-    startingPosition: Position;
-  }> = Array(puzzleWordCount);
-
-  //TODO: Refactor this code to be more readable
+  let navigationArray: Array<Array<string>> = [[]];
 
   puzzleData.result
     .filter((word) => word.orientation !== "none")
-    .forEach((word, i) => {
-      clues[i] = {
+    .forEach((word, wordIndex) => {
+      clues[wordIndex] = {
         clue: word.clue,
         direction: word.orientation,
         id: word.position,
       };
 
-      word.answer.split("").forEach((_, i) => {
+      navigationArray[wordIndex] = [];
+
+      word.answer.split("").forEach((_, letterIndex) => {
         const position =
           word.orientation === "across"
-            ? `${word.starty},${word.startx + i}`
-            : `${word.starty + i},${word.startx}`;
+            ? `${word.starty - 1},${word.startx + letterIndex - 1}`
+            : `${word.starty + letterIndex - 1},${word.startx - 1}`;
 
-        const isFirstLetter = i === 0;
+        navigationArray[wordIndex][letterIndex] = position;
 
-        if (!positionsMap.has(position) || isFirstLetter)
-          positionsMap.set(position, {
-            id: word.position,
-            firstLetter: isFirstLetter,
-          });
+        const isFirstLetter = letterIndex === 0;
 
-        completedPuzzleData.set(position, word.answer[i]);
+        const existingCell = positionsMap.get(position);
+        const newIndices = existingCell
+          ? [...existingCell.indices, { wordIndex, letterIndex }]
+          : [{ wordIndex, letterIndex }];
+
+        positionsMap.set(position, {
+          indices: newIndices,
+          id: isFirstLetter ? word.position : existingCell?.id,
+        });
+
+        completedPuzzleData.set(position, word.answer[letterIndex]);
       });
-
-      if (navigationArray[word.position - 1] === undefined) {
-        navigationArray[word.position - 1] = {
-          direction: word.orientation,
-          startingPosition: [word.starty, word.startx],
-        };
-        return;
-      }
-      //TODO: Intersection
-      navigationArray[word.position - 1].direction = "intersection";
     });
 
-  // console.log(puzzleData.result);
-  // console.log(navigationArray);
+  console.log(navigationArray);
+  console.log(positionsMap);
 
   return (
     <div className="flex items-center justify-center">
@@ -101,9 +91,9 @@ export default async function CrosswordPage({ params }: Params) {
         />
       </div>
       <CrosswordClues clues={clues} />
-      <Button>
+      {/* <Button>
         <Link href="/">Get a new puzzle</Link>
-      </Button>
+      </Button> */}
     </div>
   );
 }
