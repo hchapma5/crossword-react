@@ -1,4 +1,11 @@
 import type { Metadata } from "next";
+import {
+  ClerkProvider,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from "@clerk/nextjs";
 import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 
@@ -23,14 +30,25 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body
-        className={cn("bg-background font-sans antialiased", fontSans.variable)}
-      >
-        <main className="min-w-screen flex min-h-screen flex-col items-center justify-between bg-white pt-[4rem] dark:bg-black">
-          {children}
-        </main>
-      </body>
-    </html>
+    <ClerkProvider>
+      <html lang="en" suppressHydrationWarning>
+        <body
+          className={cn(
+            "bg-background font-sans antialiased",
+            fontSans.variable,
+          )}
+        >
+          <SignedOut>
+            <SignInButton />
+          </SignedOut>
+          <SignedIn>
+            <UserButton />
+          </SignedIn>
+          <main className="min-w-screen flex min-h-screen flex-col items-center justify-between bg-white pt-[4rem] dark:bg-black">
+            {children}
+          </main>
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

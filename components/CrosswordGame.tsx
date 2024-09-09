@@ -59,7 +59,7 @@ export default function CrosswordGame({
     (e: React.MouseEvent<HTMLInputElement>) => {
       const position = positionsMap.get(e.currentTarget.id)!.indices;
       const { wordIndex, letterIndex } =
-        position[0].wordIndex === currentPosition.wordIndex
+        position[0].wordIndex === currentPosition.wordIndex && position[1]
           ? position[1]
           : position[0];
       setCurrentPosition({

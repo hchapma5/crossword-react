@@ -43,7 +43,11 @@ Do NOT include any additional information in the response.
     // Clean data - removing invalid words (words with spaces, special characters, etc.)
     const specialChars = /[!@#$%^&*(),.?":{}|<>']/g;
     const cleanedData = parsedData.filter(
-      ({ answer }) => !answer.match(specialChars) && !answer.includes(" "),
+      ({ answer }) =>
+        !answer.match(specialChars) &&
+        !answer.includes(" ") &&
+        answer.length >= 3 &&
+        answer.length <= 8,
     );
 
     return cleanedData;
