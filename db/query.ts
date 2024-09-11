@@ -24,11 +24,26 @@ export async function getCrosswordDataById(
   return [crosswordData.theme as string, crosswordData.data as CrosswordPuzzle];
 }
 
-export async function getCrosswordByTheme(theme: string) {
+export async function getCrosswordIdByTheme(theme: string) {
   const crosswordData = await db
     .select({ id: Crosswords.id })
     .from(Crosswords)
     .where(eq(Crosswords.theme, theme));
   if (crosswordData.length === 0) return null;
   return crosswordData[0].id;
+}
+
+export async function getCrosswordsByTheme(theme: string) {
+  const crosswordData = await db
+    .select({ id: Crosswords.id, theme: Crosswords.theme })
+    .from(Crosswords)
+    .where(eq(Crosswords.theme, theme));
+  return crosswordData;
+}
+
+export async function getAllCrosswords() {
+  const crosswordData = await db
+    .select({ id: Crosswords.id, theme: Crosswords.theme })
+    .from(Crosswords);
+  return crosswordData;
 }

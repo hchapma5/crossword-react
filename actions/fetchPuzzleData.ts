@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import askGeminiForCrosswordData from "@/lib/genAI";
 import clg from "crossword-layout-generator";
-import { getCrosswordByTheme, insertCrosswordData } from "@/db/query";
+import { getCrosswordIdByTheme, insertCrosswordData } from "@/db/query";
 import { isRedirectError } from "next/dist/client/components/redirect";
 import { GenAiCrosswordData } from "@/types/types";
 
@@ -13,7 +13,7 @@ export const fetchPuzzleData = async (formData: FormData) => {
     const theme = formData.get("theme") as string;
 
     // Check if the crossword exists in the database
-    let crosswordId = await getCrosswordByTheme(theme);
+    let crosswordId = await getCrosswordIdByTheme(theme);
 
     if (!crosswordId) {
       // Fetch crossword data from Gemini API
