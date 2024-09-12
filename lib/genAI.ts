@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { GenAiCrosswordData } from "@/types/types";
+import { GenAiCrosswordData } from "@/utils/types";
 
 async function askGeminiForCrosswordData(theme: string) {
   const prompt = `

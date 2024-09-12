@@ -1,7 +1,7 @@
 "use server";
 
 import { Button } from "@/components/ui/button";
-import { Direction, Position } from "@/types/types";
+import { Direction } from "@/utils/types";
 import { getCrosswordDataById } from "@/db/query";
 import Link from "next/link";
 import CrosswordGame from "@/components/CrosswordGame";

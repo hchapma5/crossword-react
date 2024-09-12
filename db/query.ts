@@ -1,7 +1,7 @@
 import { Crosswords } from "./schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { CrosswordPuzzle } from "@/types/types";
+import { CrosswordPuzzle } from "@/utils/types";
 
 export async function insertCrosswordData(
   theme: string,

@@ -1,5 +1,5 @@
 import React from "react";
-import { Direction } from "@/types/types";
+import { Direction } from "@/utils/types";
 
 interface Clue {
   clue: string;

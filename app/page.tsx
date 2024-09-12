@@ -1,6 +1,6 @@
 import { Input } from "@/components/ui/input";
-import { RxMagnifyingGlass } from "react-icons/rx";
-import { fetchPuzzleData } from "@/actions/fetchPuzzleData";
+import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
+import { fetchPuzzleData } from "@/utils/actions";
 
 export default function HomePage() {
   return (
@@ -19,7 +19,7 @@ export default function HomePage() {
           placeholder="Enter a theme or topic"
           className="relative h-fit w-full rounded-full px-12 py-4 text-lg"
         />
-        <RxMagnifyingGlass className="relative bottom-11 left-4 h-6 w-6" />
+        <MagnifyingGlassIcon className="relative bottom-11 left-4 h-6 w-6" />
         <label className="relative bottom-4 right-4 text-right text-sm text-gray-500">
           Powered by AI
         </label>
