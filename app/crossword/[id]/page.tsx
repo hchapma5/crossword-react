@@ -1,7 +1,7 @@
 "use server";
 
 import { Button } from "@/components/ui/button";
-import { Direction } from "@/utils/types";
+import { Direction } from "@/types/types";
 import { getCrosswordDataById } from "@/db/query";
 import Link from "next/link";
 import CrosswordGame from "@/components/CrosswordGame";
@@ -76,9 +76,6 @@ export default async function CrosswordPage({ params }: Params) {
       });
     });
 
-  console.log(navigationArray);
-  console.log(positionsMap);
-
   return (
     <form
       action={isPuzzleComplete}
@@ -86,13 +83,14 @@ export default async function CrosswordPage({ params }: Params) {
     >
       <h1 className="py-4 text-center text-5xl font-semibold">{theme}</h1>
       <div className="flex flex-grow">
-        <CrosswordGame
-          rows={puzzleData.rows}
-          cols={puzzleData.cols}
-          navigationArray={navigationArray}
-          positionsMap={positionsMap}
-          className="h-fit w-2/3"
-        />
+        <div className="h-fit w-2/3">
+          <CrosswordGame
+            rows={puzzleData.rows}
+            cols={puzzleData.cols}
+            navigationArray={navigationArray}
+            positionsMap={positionsMap}
+          />
+        </div>
         <CrosswordClues clues={clues} className="h-full w-1/3" />
       </div>
       <div className="flex w-full items-center justify-evenly">

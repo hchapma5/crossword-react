@@ -5,7 +5,7 @@ import askGeminiForCrosswordData from "@/lib/genAI";
 import clg from "crossword-layout-generator";
 import { getCrosswordIdByTheme, insertCrosswordData } from "@/db/query";
 import { isRedirectError } from "next/dist/client/components/redirect";
-import { GenAiCrosswordData } from "@/utils/types";
+import { GenAiCrosswordData } from "@/types/types";
 
 export const fetchPuzzleData = async (formData: FormData) => {
   try {

@@ -1,6 +1,9 @@
 import Search from "@/components/ui/search";
-import { getAllCrosswords, getCrosswordsByTheme } from "@/db/query";
+import { getAllCrosswords } from "@/db/query";
+import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
+
+const supabase = createClient();
 
 export default async function BrowseCrosswords({
   searchParams,
@@ -17,6 +20,10 @@ export default async function BrowseCrosswords({
   //TODO: Add a 5-star rating system to the card
   //TODO: Migrate some code to layout.tsx and a navigation component
 
+  const filteredCrosswords = crosswords.filter((crossword) =>
+    crossword.theme.toLowerCase().includes(query.toLowerCase()),
+  );
+
   return (
     <div className="w-full">
       <div className="flex w-full items-center justify-between">
@@ -25,12 +32,30 @@ export default async function BrowseCrosswords({
       <div className="mt-4 flex items-center justify-between gap-2 md:mt-8">
         <Search placeholder="Search for Crosswords..." />
       </div>
-      <div className="flex flex-wrap gap-4 p-4">
-        {crosswords.map((crossword) => (
-          <div key={crossword.id} className="flex size-48 flex-col bg-blue-500">
-            <Link href={`/crossword/${crossword.id}`}>{crossword.theme}</Link>
-          </div>
-        ))}
+      <div className="flex flex-wrap gap-12 p-4">
+        {filteredCrosswords.map((crossword) => {
+          const { data } = supabase.storage
+            .from("crosswords")
+            .getPublicUrl(`${crossword.id}.png`);
+
+          return (
+            <div key={crossword.id} className="mb-4 flex size-48 flex-col">
+              <Link href={`/crossword/${crossword.id}`}>
+                <div className="border-2 border-black">
+                  <h2 className="text-center text-lg font-semibold">
+                    {crossword.theme}
+                  </h2>
+                  <img
+                    src={data.publicUrl}
+                    alt="crossword thumbnail"
+                    width={200}
+                    height={200}
+                  />
+                </div>
+              </Link>
+            </div>
+          );
+        })}
         {/* Place a `generate crossword` card here */}
       </div>
       {/* <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>

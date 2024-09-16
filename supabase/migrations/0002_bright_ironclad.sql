@@ -1,0 +1,1 @@
+ALTER TABLE "crosswords" ALTER COLUMN "thumbnail" DROP NOT NULL;

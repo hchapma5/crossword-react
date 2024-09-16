@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import { useParams } from "next/navigation";
+import ScreenCapture from "./ScreenCapture";
 
 interface CrosswordGameProps {
   rows: number;
@@ -10,7 +12,6 @@ interface CrosswordGameProps {
     string,
     { indices: { wordIndex: number; letterIndex: number }[]; id?: number }
   >;
-  className?: string;
 }
 
 export default function CrosswordGame({
@@ -18,13 +19,14 @@ export default function CrosswordGame({
   cols,
   navigationArray,
   positionsMap,
-  className,
 }: CrosswordGameProps) {
   const [currentPosition, setCurrentPosition] = useState({
     wordIndex: 0,
     letterIndex: 0,
   });
   const inputRefs = useRef<Map<string, HTMLInputElement>>(new Map());
+
+  const crosswordId = useParams().id as string;
 
   const setInputRef = useCallback(
     (position: string) => (el: HTMLInputElement | null) => {
@@ -144,51 +146,53 @@ export default function CrosswordGame({
   }, [currentPosition, navigationArray]);
 
   return (
-    <div
-      style={{
-        gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
-      }}
-      className={`grid h-fit gap-[1px] ${className}`}
-    >
-      {Array.from({ length: rows * cols }, (_, index) => {
-        const rowIndex = Math.floor(index / cols);
-        const colIndex = index % cols;
-        const position = `${rowIndex},${colIndex}`;
-        const cellData = positionsMap.get(position);
+    <ScreenCapture imageId={crosswordId}>
+      <div
+        style={{
+          gridTemplateColumns: `repeat(${cols}, minmax(0, 1fr))`,
+        }}
+        className="grid h-fit gap-[1px]"
+      >
+        {Array.from({ length: rows * cols }, (_, index) => {
+          const rowIndex = Math.floor(index / cols);
+          const colIndex = index % cols;
+          const position = `${rowIndex},${colIndex}`;
+          const cellData = positionsMap.get(position);
 
-        if (!cellData) return <div key={position} />;
+          if (!cellData) return <div key={position} />;
 
-        const isCurrentWord = cellData.indices.some(({ wordIndex }) => {
-          return wordIndex === currentPosition.wordIndex;
-        });
+          const isCurrentWord = cellData.indices.some(({ wordIndex }) => {
+            return wordIndex === currentPosition.wordIndex;
+          });
 
-        return (
-          <div
-            key={position}
-            className="relative aspect-square outline outline-1 outline-black"
-          >
-            {cellData.id && (
-              <label className="absolute left-0 top-0 text-xs font-semibold">
-                {cellData.id}
-              </label>
-            )}
-            <input
-              type="text"
-              name={position}
-              id={position}
-              ref={setInputRef(position)}
-              onChange={handleInputChange}
-              onKeyDown={handleKeyDown}
-              onClick={handleClick}
-              autoCorrect="off"
-              autoComplete="off"
-              onSelect={(e) => e.currentTarget.setSelectionRange(0, 1)}
-              className={`h-full w-full text-center text-xl font-semibold ${isCurrentWord ? "bg-blue-100" : "bg-slate-100"}`}
-              maxLength={1}
-            />
-          </div>
-        );
-      })}
-    </div>
+          return (
+            <div
+              key={position}
+              className="relative aspect-square outline outline-1 outline-black"
+            >
+              {cellData.id && (
+                <label className="absolute left-0 top-0 text-xs font-semibold">
+                  {cellData.id}
+                </label>
+              )}
+              <input
+                type="text"
+                name={position}
+                id={position}
+                ref={setInputRef(position)}
+                onChange={handleInputChange}
+                onKeyDown={handleKeyDown}
+                onClick={handleClick}
+                autoCorrect="off"
+                autoComplete="off"
+                onSelect={(e) => e.currentTarget.setSelectionRange(0, 1)}
+                className={`h-full w-full text-center text-xl font-semibold ${isCurrentWord ? "bg-blue-100" : "bg-slate-100"}`}
+                maxLength={1}
+              />
+            </div>
+          );
+        })}
+      </div>
+    </ScreenCapture>
   );
 }

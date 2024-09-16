@@ -1,0 +1,1 @@
+ALTER TABLE "crosswords" ADD COLUMN "thumbnail" text NOT NULL;
