@@ -9,11 +9,10 @@ export const useScreenshot = (ref: RefObject<HTMLElement>) => {
     setLoading(true);
     let tempImage: string | undefined;
 
+    if (!ref.current) return;
+
     try {
-      const body = document.getElementById("root")!;
-
-      tempImage = await toPng(ref?.current || body);
-
+      tempImage = await toPng(ref.current);
       setImage(tempImage);
     } catch (e) {
       console.error(e);
@@ -22,7 +21,7 @@ export const useScreenshot = (ref: RefObject<HTMLElement>) => {
 
       return tempImage;
     }
-  }, []);
+  }, [ref]);
 
   const clear = useCallback(() => setImage(undefined), []);
 

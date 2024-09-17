@@ -2,6 +2,7 @@ import Search from "@/components/ui/search";
 import { getAllCrosswords } from "@/db/query";
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
+import Image from "next/image";
 
 const supabase = createClient();
 
@@ -45,9 +46,9 @@ export default async function BrowseCrosswords({
                   <h2 className="text-center text-lg font-semibold">
                     {crossword.theme}
                   </h2>
-                  <img
+                  <Image
                     src={data.publicUrl}
-                    alt="crossword thumbnail"
+                    alt={`${crossword.theme} thumbnail`}
                     width={200}
                     height={200}
                   />
