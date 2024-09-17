@@ -2,9 +2,9 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useParams } from "next/navigation";
-import ScreenCapture from "./ScreenCapture";
+import ScreenCapture from "./screen-capture";
 
-interface CrosswordGameProps {
+interface CrosswordPuzzleProps {
   rows: number;
   cols: number;
   navigationArray: Array<Array<string>>;
@@ -14,12 +14,12 @@ interface CrosswordGameProps {
   >;
 }
 
-export default function CrosswordGame({
+export default function CrosswordPuzzle({
   rows,
   cols,
   navigationArray,
   positionsMap,
-}: CrosswordGameProps) {
+}: CrosswordPuzzleProps) {
   const [currentPosition, setCurrentPosition] = useState({
     wordIndex: 0,
     letterIndex: 0,

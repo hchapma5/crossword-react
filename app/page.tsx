@@ -1,8 +1,28 @@
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { fetchPuzzleData } from "@/utils/actions";
+import { auth, currentUser, User } from "@clerk/nextjs/server";
+import { RedirectToSignIn } from "@clerk/nextjs";
+import { redirect } from "next/navigation";
 
-export default function HomePage() {
+interface SearchParams {
+  searchParams: { [key: string]: string | string[] | undefined };
+}
+
+export default async function HomePage({ searchParams }: SearchParams) {
+  const { userId } = auth();
+
+  if (!userId) return <RedirectToSignIn />;
+
+  const user = await currentUser();
+
+  // Extract the theme from query parameters
+  const theme = searchParams?.theme;
+  if (theme) {
+    // Redirect to the crossword page with the theme
+    redirect(`/browse/?query=${theme}`);
+  }
+
   return (
     <div className="flex flex-col items-center justify-center gap-y-24">
       <h1 className="w-1/2 text-ellipsis break-words text-center text-6xl font-bold">
@@ -11,7 +31,7 @@ export default function HomePage() {
           Generator
         </span>
       </h1>
-      <form action={fetchPuzzleData} className="flex w-1/2 flex-col">
+      <form className="flex w-1/2 flex-col" method="GET">
         <Input
           id="theme"
           name="theme"
@@ -20,12 +40,9 @@ export default function HomePage() {
           className="relative h-fit w-full rounded-full px-12 py-4 text-lg"
         />
         <MagnifyingGlassIcon className="relative bottom-11 left-4 h-6 w-6" />
-        <label className="relative bottom-4 right-4 text-right text-sm text-gray-500">
+        <Label className="relative bottom-4 right-4 text-right">
           Powered by AI
-        </label>
-        <button className="hidden" type="submit">
-          Submit
-        </button>
+        </Label>
       </form>
     </div>
   );

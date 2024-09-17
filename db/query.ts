@@ -6,10 +6,11 @@ import { CrosswordPuzzle } from "@/types/types";
 export async function insertCrosswordData(
   theme: string,
   data: CrosswordPuzzle,
+  username: string,
 ) {
   const response = await db
     .insert(Crosswords)
-    .values({ theme, data })
+    .values({ theme, data, createdBy: username })
     .returning({ id: Crosswords.id });
   return response[0].id;
 }
@@ -38,6 +39,8 @@ export async function getAllCrosswords() {
     .select({
       id: Crosswords.id,
       theme: Crosswords.theme,
+      username: Crosswords.createdBy,
+      createdAt: Crosswords.createdAt,
     })
     .from(Crosswords);
   return crosswordData;

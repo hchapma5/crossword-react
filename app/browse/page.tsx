@@ -2,7 +2,8 @@ import Search from "@/components/ui/search";
 import { getAllCrosswords } from "@/db/query";
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
-import Image from "next/image";
+import ImageCard from "@/components/image-card";
+import CrosswordGeneratorCard from "@/components/crossword-generator-card";
 
 const supabase = createClient();
 
@@ -40,24 +41,17 @@ export default async function BrowseCrosswords({
             .getPublicUrl(`${crossword.id}.png`);
 
           return (
-            <div key={crossword.id} className="mb-4 flex size-48 flex-col">
-              <Link href={`/crossword/${crossword.id}`}>
-                <div className="border-2 border-black">
-                  <h2 className="text-center text-lg font-semibold">
-                    {crossword.theme}
-                  </h2>
-                  <Image
-                    src={data.publicUrl}
-                    alt={`${crossword.theme} thumbnail`}
-                    width={200}
-                    height={200}
-                  />
-                </div>
-              </Link>
-            </div>
+            <Link key={crossword.id} href={`/crossword/${crossword.id}`}>
+              <ImageCard
+                theme={crossword.theme}
+                imgUrl={data.publicUrl}
+                username={crossword.username}
+                createdAt={crossword.createdAt}
+              />
+            </Link>
           );
         })}
-        {/* Place a `generate crossword` card here */}
+        <CrosswordGeneratorCard />
       </div>
       {/* <Suspense key={query + currentPage} fallback={<InvoicesTableSkeleton />}>
         {<Table query={query} currentPage={currentPage} />}

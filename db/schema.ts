@@ -5,7 +5,7 @@ export const Crosswords = pgTable("crosswords", {
   theme: text("theme").notNull().unique(),
   data: jsonb("data").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
+  createdBy: text("username").notNull(),
 });
 
 export type InsertCrossword = typeof Crosswords.$inferInsert;
-export type SelectCrossword = typeof Crosswords.$inferSelect;

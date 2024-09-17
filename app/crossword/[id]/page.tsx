@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Direction } from "@/types/types";
 import { getCrosswordDataById } from "@/db/query";
 import Link from "next/link";
-import CrosswordGame from "@/components/CrosswordGame";
-import CrosswordClues from "@/components/CrosswordClues";
+import CrosswordPuzzle from "@/components/crossword-puzzle";
+import CrosswordClues from "@/components/crossword-clues";
 
 let completedPuzzleData = new Map<string, string>();
 
@@ -84,7 +84,7 @@ export default async function CrosswordPage({ params }: Params) {
       <h1 className="py-4 text-center text-5xl font-semibold">{theme}</h1>
       <div className="flex flex-grow">
         <div className="h-fit w-2/3">
-          <CrosswordGame
+          <CrosswordPuzzle
             rows={puzzleData.rows}
             cols={puzzleData.cols}
             navigationArray={navigationArray}
