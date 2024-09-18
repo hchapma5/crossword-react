@@ -1,4 +1,4 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Image from "next/image";
 
 interface ImageCardProps {
@@ -8,29 +8,33 @@ interface ImageCardProps {
   createdAt: Date;
 }
 
-export default function ImageCard(props: ImageCardProps) {
-  const { theme, imgUrl, username, createdAt } = props;
-
+export default function ImageCard({
+  theme,
+  imgUrl,
+  username,
+  createdAt,
+}: ImageCardProps) {
   return (
-    <Card className="mx-auto w-full max-w-sm overflow-hidden">
-      <div className="relative aspect-[3/2]">
-        <Image
-          src={imgUrl}
-          alt={`Image of ${theme} crossword`}
-          fill
-          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          className="object-cover"
-        />
-      </div>
-      <CardHeader className="p-4">
-        <h2 className="text-2xl font-bold">{theme}</h2>
-      </CardHeader>
-      <CardContent className="p-4 pt-0">
-        <p className="text-sm text-muted-foreground">
-          <span className="font-semibold">{username}</span> •{" "}
+    <Card className="flex flex-col overflow-hidden transition-shadow hover:shadow-lg">
+      <CardContent className="flex-shrink-0 bg-gray-300 p-0">
+        <div className="relative aspect-square w-full">
+          <Image
+            src={imgUrl}
+            alt={`Image of ${theme} crossword`}
+            fill
+            className="object-scale-down p-2"
+          />
+        </div>
+      </CardContent>
+      <CardFooter className="flex flex-grow flex-col items-start justify-between p-4">
+        <div className="w-full">
+          <h2 className="truncate text-lg font-semibold">{theme}</h2>
+          <p className="truncate text-sm text-gray-600">{username}</p>
+        </div>
+        <p className="mt-2 text-xs text-gray-500">
           {createdAt.toLocaleDateString()}
         </p>
-      </CardContent>
+      </CardFooter>
     </Card>
   );
 }

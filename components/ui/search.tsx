@@ -6,13 +6,12 @@ import { Input } from "./input";
 
 export default function Search({
   placeholder,
-  path,
 }: {
   placeholder: string;
   path?: string;
 }) {
   const searchParams = useSearchParams();
-  let pathname = path || usePathname;
+  let pathname = usePathname();
 
   const { replace } = useRouter();
 

@@ -32,7 +32,7 @@ export default function CrosswordGeneratorCard() {
       >
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold">
-            Use AI to generate your own crossword
+            Generate your own crossword
           </CardTitle>
         </CardHeader>
         <CardContent className="text-center">

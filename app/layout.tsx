@@ -44,7 +44,7 @@ export default function RootLayout({
           <SignedIn>
             <UserButton />
           </SignedIn>
-          <main className="min-w-screen flex min-h-screen flex-col items-center justify-between bg-white pt-[4rem] dark:bg-black">
+          <main className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
             {children}
           </main>
         </body>
