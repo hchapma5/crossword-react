@@ -21,6 +21,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { fetchPuzzleData } from "@/utils/actions";
 
+// TODO: Put Dialog modal in a separate component, to be used in the navbar
+
 export default function CrosswordGeneratorCard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 

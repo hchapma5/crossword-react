@@ -8,6 +8,11 @@ import { isRedirectError } from "next/dist/client/components/redirect";
 import { GenAiCrosswordData } from "@/types/types";
 import { currentUser } from "@clerk/nextjs/server";
 
+// TODO: rate limiting for generating crosswords
+// TODO: validate user input
+// TODO: add error handling
+// TODO: authenticate user
+
 export const fetchPuzzleData = async (formData: FormData) => {
   const user = await currentUser();
 

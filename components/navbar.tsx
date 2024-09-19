@@ -5,8 +5,9 @@ import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 
 export default function Navbar() {
   return (
-    <header className="flex h-14 items-center bg-white px-4 py-8 lg:px-6">
-      <Link className="flex items-center justify-center" href="/browse">
+    <header className="sticky flex h-14 items-center justify-between border-b bg-white px-4 py-8 lg:px-6">
+      {/* Title */}
+      <Link className="flex items-center" href="/">
         <Grid className="h-6 w-6" />
         <span className="ml-2 text-lg font-bold">
           Crossword Puzzle{" "}
@@ -15,12 +16,38 @@ export default function Navbar() {
           </span>
         </span>
       </Link>
-      <nav className="ml-auto flex items-center justify-between gap-4 sm:gap-6">
-        <div className="w-full max-w-xs">
-          <Search placeholder="Search for crosswords..." />
-        </div>
+
+      {/* Search */}
+      <div className="w-fit justify-self-center">
+        <Search placeholder="Search for crosswords..." />
+      </div>
+
+      {/* Actions */}
+      <nav className="flex items-center justify-end space-x-4">
+        <Link
+          className="text-sm font-medium underline-offset-4 hover:underline"
+          href="#"
+        >
+          Generate {/* TODO: Open modal for generating crosswords */}
+        </Link>
+        <Link
+          className="text-sm font-medium underline-offset-4 hover:underline"
+          href="/browse"
+        >
+          Browse
+        </Link>
+        <Link
+          className="text-sm font-medium underline-offset-4 hover:underline"
+          href="/"
+        >
+          About
+        </Link>
         <SignedOut>
-          <SignInButton />
+          <SignInButton>
+            <div className="w-fit cursor-pointer text-sm font-medium underline-offset-4 hover:underline">
+              Sign In
+            </div>
+          </SignInButton>
         </SignedOut>
         <SignedIn>
           <UserButton />
