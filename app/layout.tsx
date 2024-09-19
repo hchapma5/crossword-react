@@ -1,15 +1,10 @@
 import type { Metadata } from "next";
-import {
-  ClerkProvider,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from "@clerk/nextjs";
+import { ClerkProvider } from "@clerk/nextjs";
 import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 
 import { cn } from "@/lib/utils";
+import Navbar from "@/components/navbar";
 
 const fontSans = FontSans({
   subsets: ["latin"],
@@ -38,13 +33,8 @@ export default function RootLayout({
             fontSans.variable,
           )}
         >
-          <SignedOut>
-            <SignInButton />
-          </SignedOut>
-          <SignedIn>
-            <UserButton />
-          </SignedIn>
-          <main className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+          <main className="flex max-h-screen flex-col">
+            <Navbar />
             {children}
           </main>
         </body>

@@ -23,6 +23,8 @@ export const fetchPuzzleData = async (formData: FormData) => {
       const aiResponse: GenAiCrosswordData =
         await askGeminiForCrosswordData(theme);
 
+      console.log("aiResponse", aiResponse);
+
       // Generate a crossword layout
       const crosswordData = clg.generateLayout(aiResponse);
 
