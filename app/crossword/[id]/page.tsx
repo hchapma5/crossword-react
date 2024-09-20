@@ -1,11 +1,11 @@
 "use server";
 
 import { Button } from "@/components/ui/button";
-import { Direction } from "@/types/types";
+import { Clue } from "@/types/types";
 import { getCrosswordDataById } from "@/db/query";
-import Link from "next/link";
-import CrosswordPuzzle from "@/components/crossword-puzzle";
-import CrosswordClues from "@/components/crossword-clues";
+import { CrosswordProvider } from "@/components/crossword-provider";
+import CluesContainer from "@/components/clues-container";
+import CrosswordGrid from "@/components/crossword-grid";
 
 let completedPuzzleData = new Map<string, string>();
 
@@ -32,7 +32,7 @@ export const isPuzzleComplete = async (formData: FormData) => {
 export default async function CrosswordPage({ params }: Params) {
   const [theme, puzzleData] = await getCrosswordDataById(params.id);
 
-  let clues: Array<{ clue: string; direction: Direction; id: number }> = [];
+  let clues: Array<Clue> = [];
 
   let positionsMap = new Map<
     string,
@@ -48,6 +48,7 @@ export default async function CrosswordPage({ params }: Params) {
         clue: word.clue,
         direction: word.orientation,
         id: word.position,
+        length: word.answer.length,
       };
 
       navigationArray[wordIndex] = [];
@@ -77,27 +78,20 @@ export default async function CrosswordPage({ params }: Params) {
     });
 
   return (
-    <form
-      action={isPuzzleComplete}
-      className="flex h-[750px] w-3/4 flex-col items-center gap-4"
-    >
-      <h1 className="py-4 text-center text-5xl font-semibold">{theme}</h1>
-      <div className="flex flex-grow">
-        <div className="h-fit w-2/3">
-          <CrosswordPuzzle
+    <form action={isPuzzleComplete}>
+      <div className="flex flex-col">
+        <CrosswordProvider>
+          <CrosswordGrid
             rows={puzzleData.rows}
             cols={puzzleData.cols}
             navigationArray={navigationArray}
             positionsMap={positionsMap}
           />
+          <CluesContainer clues={clues} />
+        </CrosswordProvider>
+        <div className="flex w-full items-center justify-evenly">
+          <Button type="submit">Submit</Button>
         </div>
-        <CrosswordClues clues={clues} className="h-full w-1/3" />
-      </div>
-      <div className="flex w-full items-center justify-evenly">
-        <Button type="submit">Submit</Button>
-        <Button>
-          <Link href="/">Get a new puzzle</Link>
-        </Button>
       </div>
     </form>
   );

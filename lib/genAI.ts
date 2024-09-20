@@ -1,36 +1,24 @@
 import { GoogleGenerativeAI } from "@google/generative-ai";
-import { GenAiCrosswordData } from "@/utils/types";
+import { GenAiCrosswordData } from "@/types/types";
 
-async function askGeminiForCrosswordData(theme: string) {
+async function askGeminiForCrosswordData(
+  theme: string,
+): Promise<GenAiCrosswordData> {
   const prompt = `
-  Consider the following information carefully when generating data for a crossword puzzle:
+  Generate data for a crossword puzzle with the theme "${theme}". Follow these requirements strictly:
 
-- The theme is "${theme}".
-- You MUST provide 20 words.
-- Each word MUST be unique.
-- Each word MUST have a unique clue.
-- Each word MUST be between 3 and 8 characters long.
-- Each word MUST be one SINGLE word, not a combination of words.
-- Words MUST ONLY contain letters. (NO numbers, spaces, or special characters.)
-- All words and clues MUST be directly related to the given theme.
-- Avoid generic words that could apply to multiple themes. Each word should be specifically connected to the theme.
-- Clues should be concise and provide a clear hint to the answer without being too obvious.
-- Include a mix of easy, medium, and challenging words and clues.
-- Ensure all words and clues are appropriate for a general audience.
-- Include a mix of nouns, verbs, adjectives, and adverbs when applicable to the theme.
-- Use commonly known words within the theme, avoiding highly specialized or obscure terminology.
-- Do not create clues that reference other words in the puzzle.
-- Proper nouns are allowed, but specify if the answer should be capitalized in the puzzle.
-- Use standard English spelling for all words.
-- Double-check that all requirements are met before finalizing the response.
+  1. Provide exactly 20 words.
+  2. Each word must be unique and directly related to the theme.
+  3. Words must be 3-8 characters long and contain only letters (A-Z).
+  4. Each word must have a unique, concise clue.
+  5. Include a mix of easy, medium, and challenging words.
+  6. Use a variety of word types (nouns, verbs, adjectives, adverbs) when applicable.
+  7. Avoid obscure terminology; use commonly known words within the theme.
 
-Response MUST follow the example format:
-
-[
-  {"clue": "...", "answer": "..."},
-]
-
-Do NOT include any additional information in the response.
+  Respond ONLY with a JSON array in this format:
+  [
+    {"clue": "...", "answer": "...", "capitalize": boolean},
+  ]
   `;
 
   try {
@@ -40,20 +28,21 @@ Do NOT include any additional information in the response.
     const response = result.response.text();
     const parsedData = JSON.parse(response) as GenAiCrosswordData;
 
-    // Clean data - removing invalid words (words with spaces, special characters, etc.)
-    const specialChars = /[!@#$%^&*(),.?":{}|<>']/g;
-    const cleanedData = parsedData.filter(
-      ({ answer }) =>
-        !answer.match(specialChars) &&
-        !answer.includes(" ") &&
-        answer.length >= 3 &&
-        answer.length <= 8,
-    );
+    // Validate and clean data
+    const cleanedData = parsedData.filter(({ answer, clue }) => {
+      const isValidWord = /^[A-Za-z]{3,8}$/.test(answer);
+      const isValidClue = clue.trim().length > 0;
+      return isValidWord && isValidClue;
+    });
+
+    if (cleanedData.length !== 20) {
+      throw new Error("Invalid number of words generated");
+    }
 
     return cleanedData;
   } catch (error) {
-    console.error("Error asking Gemini:", error);
-    throw new Error("Error processing crossword data");
+    console.error("Error generating crossword data:", error);
+    throw new Error("Failed to generate crossword data");
   }
 }
 

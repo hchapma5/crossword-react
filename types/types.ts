@@ -27,6 +27,13 @@ type Position = [row: number, col: number];
 
 type Direction = "across" | "down" | "intersection" | "none";
 
+type Clue = {
+  clue: string;
+  direction: Direction;
+  id: number;
+  length: number;
+};
+
 export type {
   GenAiCrosswordData,
   CrosswordPuzzle,
@@ -34,4 +41,5 @@ export type {
   Position,
   Direction,
   DirectionsMap,
+  Clue,
 };

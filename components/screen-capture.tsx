@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useScreenshot } from "../hooks/useScreenshot";
 import { convertBlobUrlToFile } from "@/utils/utils";
-import { checkIfThumbnailExists, uploadImageToStorage } from "@/db/storage";
+import { uploadImageToStorage } from "@/db/storage";
 
 type ScreenCaptureProps = {
   imageId: string;
@@ -13,22 +13,18 @@ export default function ScreenCapture({
   children,
 }: ScreenCaptureProps) {
   const ref = useRef(null);
-  const { image, takeScreenshot, isLoading, clear } = useScreenshot(ref);
+  const { image, takeScreenshot, clear } = useScreenshot(ref);
 
   useEffect(() => {
-    checkIfThumbnailExists(imageId).then((exists) => {
-      if (exists) return;
-
-      if (image) {
-        convertBlobUrlToFile(image).then((file) =>
-          uploadImageToStorage(imageId, file),
-        );
-        return clear();
-      }
-
+    if (image) {
+      convertBlobUrlToFile(image).then((file) =>
+        uploadImageToStorage(imageId, file),
+      );
+      clear();
+    } else {
       takeScreenshot();
-    });
-  }, [isLoading]);
+    }
+  }, [image, imageId, takeScreenshot, clear]);
 
   return <div ref={ref}>{children}</div>;
 }
