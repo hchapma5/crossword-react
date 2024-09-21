@@ -12,10 +12,9 @@ export default function ClueList({ title, clues }: ClueListProps) {
       <ul className="space-y-2">
         {clues.map((clue) => (
           <li key={clue.id} className="flex gap-2">
-            <span className="w-6 flex-shrink-0 font-semibold text-gray-500">
-              {clue.id}. {`(${clue.length})`}
+            <span className="flex-grow overflow-hidden text-ellipsis">
+              {`${clue.id + 1}. ${clue.clue} (${clue.length})`}
             </span>
-            <span>{clue.clue}</span>
           </li>
         ))}
       </ul>

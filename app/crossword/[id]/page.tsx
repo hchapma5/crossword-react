@@ -4,16 +4,13 @@ import { Button } from "@/components/ui/button";
 import { Clue } from "@/types/types";
 import { getCrosswordDataById } from "@/db/query";
 import { CrosswordProvider } from "@/components/crossword-provider";
-import CluesContainer from "@/components/clues-container";
 import CrosswordGrid from "@/components/crossword-grid";
+import CrosswordCluesContainer from "@/components/crossword-clues-container";
+import CrosswordClues from "@/components/crossword-clues";
+import CrosswordActiveClue from "@/components/crossword-active-clue";
+import CollapseButton from "@/components/collapse-button";
 
 let completedPuzzleData = new Map<string, string>();
-
-interface Params {
-  params: {
-    id: string;
-  };
-}
 
 //TODO: Finish implementation of isPuzzleComplete function
 export const isPuzzleComplete = async (formData: FormData) => {
@@ -29,7 +26,11 @@ export const isPuzzleComplete = async (formData: FormData) => {
   return console.log("you won!");
 };
 
-export default async function CrosswordPage({ params }: Params) {
+export default async function CrosswordPage({
+  params,
+}: {
+  params: { id: string };
+}) {
   const [theme, puzzleData] = await getCrosswordDataById(params.id);
 
   let clues: Array<Clue> = [];
@@ -79,20 +80,30 @@ export default async function CrosswordPage({ params }: Params) {
 
   return (
     <form action={isPuzzleComplete}>
-      <div className="flex flex-col">
-        <CrosswordProvider>
-          <CrosswordGrid
-            rows={puzzleData.rows}
-            cols={puzzleData.cols}
-            navigationArray={navigationArray}
-            positionsMap={positionsMap}
-          />
-          <CluesContainer clues={clues} />
-        </CrosswordProvider>
-        <div className="flex w-full items-center justify-evenly">
-          <Button type="submit">Submit</Button>
+      <CrosswordProvider
+        clues={clues}
+        rows={puzzleData.rows}
+        cols={puzzleData.cols}
+        navigationArray={navigationArray}
+        positionsMap={positionsMap}
+        theme={theme}
+      >
+        <div className="flex flex-col bg-background p-4 md:p-8">
+          <div className="mx-auto flex h-auto max-h-[80vh] w-auto max-w-6xl flex-grow flex-col gap-4 md:flex-row">
+            <div className="relative flex aspect-square items-center justify-center rounded-lg bg-gray-200 p-6">
+              <CrosswordGrid />
+              <div className="absolute bottom-4 right-4">
+                <Button type="submit">Submit</Button>
+              </div>
+            </div>
+            <CrosswordCluesContainer>
+              <CrosswordClues />
+              <CollapseButton />
+            </CrosswordCluesContainer>
+            <CrosswordActiveClue />
+          </div>
         </div>
-      </div>
+      </CrosswordProvider>
     </form>
   );
 }

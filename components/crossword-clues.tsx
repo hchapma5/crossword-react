@@ -1,21 +1,22 @@
-import { Clue, Direction } from "../types/types";
+"use client";
+
 import { ScrollArea } from "./ui/scroll-area";
 import ClueList from "./clues-list";
+import { useCrossword } from "./crossword-provider";
+import { Direction } from "@/types/types";
 
-interface CrosswordCluesProps {
-  clues: Clue[];
-}
+export default function CrosswordClues() {
+  const { clues, theme } = useCrossword();
 
-export default function CluesContainer({ clues }: CrosswordCluesProps) {
   const sortedClues = (direction: Direction) =>
     clues
       .filter((clue) => clue.direction === direction)
       .sort((a, b) => a.id - b.id);
 
   return (
-    <div className="flex h-full flex-col">
-      <div className="border-b p-4">
-        <h2 className="text-2xl font-bold">Clues</h2>
+    <div className="flex h-full w-full flex-col">
+      <div className="flex items-center justify-between border-b p-4">
+        <h2 className="text-2xl font-bold">{theme}</h2>
       </div>
       <ScrollArea className="flex-grow">
         <div className="space-y-4 p-4">
