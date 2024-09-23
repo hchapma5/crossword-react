@@ -25,7 +25,7 @@ export default function Search({
   }
 
   return (
-    <div className="relative flex flex-1 flex-shrink-0">
+    <div className="relative flex">
       <label htmlFor="search" className="sr-only">
         Search
       </label>

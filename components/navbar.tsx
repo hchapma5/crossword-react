@@ -2,49 +2,39 @@ import Link from "next/link";
 import Search from "./ui/search";
 import { Grid } from "lucide-react";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import CrosswordGeneratorButton from "./crossword-generator-button";
+import GradientText from "./gradient-text";
 
 export default function Navbar() {
   return (
-    <header className="sticky flex h-14 items-center justify-between border-b bg-white px-4 py-8 lg:px-6">
+    <header className="sticky flex h-14 items-center border-b bg-white px-4 py-8 lg:px-6">
       {/* Title */}
-      <Link className="flex items-center" href="/">
+      <Link className="flex w-1/3 items-center justify-start" href="/">
         <Grid className="h-6 w-6" />
-        <span className="ml-2 text-lg font-bold">
-          Crossword Puzzle{" "}
-          <span className="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">
-            Generator
-          </span>
+        <span className="ml-2 text-2xl font-bold">
+          Crossword Puzzle <GradientText>Generator</GradientText>
         </span>
       </Link>
 
       {/* Search */}
-      <div className="w-fit justify-self-center">
+      <div className="flex w-1/3 items-center justify-center">
         <Search placeholder="Search for crosswords..." />
       </div>
 
       {/* Actions */}
-      <nav className="flex items-center justify-end space-x-4">
-        <Link
-          className="text-sm font-medium underline-offset-4 hover:underline"
-          href="#"
-        >
-          Generate {/* TODO: Open modal for generating crosswords */}
-        </Link>
-        <Link
-          className="text-sm font-medium underline-offset-4 hover:underline"
-          href="/browse"
-        >
+      <nav className="flex w-1/3 items-center justify-end space-x-4 font-semibold">
+        <CrosswordGeneratorButton>
+          <GradientText>Generate</GradientText>
+        </CrosswordGeneratorButton>
+        <Link className="underline-offset-4 hover:underline" href="/browse">
           Browse
         </Link>
-        <Link
-          className="text-sm font-medium underline-offset-4 hover:underline"
-          href="/"
-        >
+        <Link className="underline-offset-4 hover:underline" href="/">
           About
         </Link>
         <SignedOut>
           <SignInButton>
-            <div className="w-fit cursor-pointer text-sm font-medium underline-offset-4 hover:underline">
+            <div className="w-fit cursor-pointer underline-offset-4 hover:underline">
               Sign In
             </div>
           </SignInButton>

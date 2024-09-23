@@ -17,7 +17,7 @@ async function askGeminiForCrosswordData(
 
   Respond ONLY with a JSON array in this format:
   [
-    {"clue": "...", "answer": "...", "capitalize": boolean},
+    {"clue": "...", "answer": "..."},
   ]
   `;
 
@@ -34,10 +34,6 @@ async function askGeminiForCrosswordData(
       const isValidClue = clue.trim().length > 0;
       return isValidWord && isValidClue;
     });
-
-    if (cleanedData.length !== 20) {
-      throw new Error("Invalid number of words generated");
-    }
 
     return cleanedData;
   } catch (error) {

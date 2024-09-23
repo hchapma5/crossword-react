@@ -88,9 +88,9 @@ export default async function CrosswordPage({
         positionsMap={positionsMap}
         theme={theme}
       >
-        <div className="flex flex-col bg-background p-4 md:p-8">
-          <div className="mx-auto flex h-auto max-h-[80vh] w-auto max-w-6xl flex-grow flex-col gap-4 md:flex-row">
-            <div className="relative flex aspect-square items-center justify-center rounded-lg bg-gray-200 p-6">
+        <div className="flex flex-col items-center justify-center bg-background p-4 md:p-8">
+          <div className="flex h-full max-h-[80vh] w-full max-w-[80%] flex-col gap-4 backdrop:flex-grow md:flex-row">
+            <div className="relative overflow-hidden rounded-lg p-10 bg-gray-200 flex justify-center">
               <CrosswordGrid />
               <div className="absolute bottom-4 right-4">
                 <Button type="submit">Submit</Button>

@@ -18,8 +18,8 @@ export default function CrosswordClues() {
       <div className="flex items-center justify-between border-b p-4">
         <h2 className="text-2xl font-bold">{theme}</h2>
       </div>
-      <ScrollArea className="flex-grow">
-        <div className="space-y-4 p-4">
+      <ScrollArea className="w-full flex-grow">
+        <div className="w-full space-y-4 p-4">
           <ClueList title="Across" clues={sortedClues("across")} />
           <ClueList title="Down" clues={sortedClues("down")} />
         </div>
