@@ -1,7 +1,6 @@
 "use client";
 
-import { RefObject, useEffect, useRef } from "react";
-import { useParams } from "next/navigation";
+import { useEffect, useRef } from "react";
 import { checkIfThumbnailExists } from "@/db/storage";
 import { useCrossword } from "./crossword-provider";
 import { captureScreenshotAndUploadToStorage } from "@/utils/utils";
@@ -9,17 +8,17 @@ import { captureScreenshotAndUploadToStorage } from "@/utils/utils";
 export default function CrosswordGrid() {
   const {
     currentPosition,
-    positionsMap,
+    positions,
     handleInputChange,
     handleClick,
     handleKeyDown,
     setInputRef,
     rows,
     cols,
+    crosswordId,
   } = useCrossword();
 
   const crosswordGridRef = useRef(null);
-  const crosswordId = useParams().id as string;
 
   useEffect(() => {
     checkIfThumbnailExists(crosswordId).then((exists) => {
@@ -46,7 +45,7 @@ export default function CrosswordGrid() {
         const rowIndex = Math.floor(index / cols);
         const colIndex = index % cols;
         const position = `${rowIndex},${colIndex}`;
-        const cellData = positionsMap.get(position);
+        const cellData = positions.get(position);
 
         if (!cellData) return <div key={position} className="aspect-square" />;
 

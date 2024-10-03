@@ -11,6 +11,7 @@ import React, {
 import { Clue } from "@/types/types";
 
 type CrosswordContextType = {
+  crosswordId: string;
   isCluesCollapsed: boolean;
   setIsCluesCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
   currentClue: string;
@@ -28,8 +29,8 @@ type CrosswordContextType = {
   theme: string;
   clues: Array<Clue>;
   inputRefs: React.MutableRefObject<Map<string, HTMLInputElement>>;
-  navigationArray: Array<Array<string>>;
-  positionsMap: Map<
+  navigation: Array<Array<string>>;
+  positions: Map<
     string,
     { indices: { wordIndex: number; letterIndex: number }[]; id?: number }
   >;
@@ -49,10 +50,11 @@ const CrosswordContext = createContext<CrosswordContextType | undefined>(
 
 type CrosswordProviderProps = {
   children: React.ReactNode;
+  crosswordId: string;
   clues: Array<Clue>;
   theme: string;
-  navigationArray: Array<Array<string>>;
-  positionsMap: Map<
+  navigation: Array<Array<string>>;
+  positions: Map<
     string,
     { indices: { wordIndex: number; letterIndex: number }[]; id?: number }
   >;
@@ -62,10 +64,11 @@ type CrosswordProviderProps = {
 
 export const CrosswordProvider: React.FC<CrosswordProviderProps> = ({
   children,
+  crosswordId,
   clues,
   theme,
-  navigationArray,
-  positionsMap,
+  navigation,
+  positions,
   rows,
   cols,
 }) => {
@@ -82,14 +85,14 @@ export const CrosswordProvider: React.FC<CrosswordProviderProps> = ({
 
   const moveToNextPosition = useCallback(() => {
     setCurrentPosition((prev) => {
-      if (prev.letterIndex < navigationArray[prev.wordIndex].length - 1) {
+      if (prev.letterIndex < navigation[prev.wordIndex].length - 1) {
         return { ...prev, letterIndex: prev.letterIndex + 1 };
-      } else if (prev.wordIndex < navigationArray.length - 1) {
+      } else if (prev.wordIndex < navigation.length - 1) {
         return { wordIndex: prev.wordIndex + 1, letterIndex: 0 };
       }
       return prev;
     });
-  }, [navigationArray]);
+  }, [navigation]);
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,7 +105,7 @@ export const CrosswordProvider: React.FC<CrosswordProviderProps> = ({
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLInputElement>) => {
-      const position = positionsMap.get(e.currentTarget.id)!.indices;
+      const position = positions.get(e.currentTarget.id)!.indices;
       const { wordIndex, letterIndex } =
         position[0].wordIndex === currentPosition.wordIndex && position[1]
           ? position[1]
@@ -112,7 +115,7 @@ export const CrosswordProvider: React.FC<CrosswordProviderProps> = ({
         letterIndex: letterIndex,
       });
     },
-    [currentPosition, positionsMap],
+    [currentPosition, positions],
   );
 
   const handleKeyDown = useCallback(
@@ -133,7 +136,7 @@ export const CrosswordProvider: React.FC<CrosswordProviderProps> = ({
             letterIndex: e.shiftKey
               ? Math.max(0, prev.letterIndex - 1)
               : Math.min(
-                  navigationArray[prev.wordIndex].length - 1,
+                  navigation[prev.wordIndex].length - 1,
                   prev.letterIndex + 1,
                 ),
           }));
@@ -179,7 +182,7 @@ export const CrosswordProvider: React.FC<CrosswordProviderProps> = ({
           break;
       }
     },
-    [navigationArray, rows, cols, handleClick],
+    [navigation, rows, cols, handleClick],
   );
 
   const setInputRef = useCallback(
@@ -193,9 +196,9 @@ export const CrosswordProvider: React.FC<CrosswordProviderProps> = ({
 
   useEffect(() => {
     const selectedCell =
-      navigationArray[currentPosition.wordIndex][currentPosition.letterIndex];
+      navigation[currentPosition.wordIndex][currentPosition.letterIndex];
     inputRefs.current.get(selectedCell)?.focus();
-  }, [currentPosition, navigationArray]);
+  }, [currentPosition, navigation]);
 
   useEffect(() => {
     const id = currentPosition.wordIndex;
@@ -223,8 +226,8 @@ export const CrosswordProvider: React.FC<CrosswordProviderProps> = ({
         setCurrentPosition,
         clues,
         inputRefs,
-        navigationArray,
-        positionsMap,
+        navigation,
+        positions,
         moveToNextPosition,
         handleInputChange,
         handleClick,
@@ -234,6 +237,7 @@ export const CrosswordProvider: React.FC<CrosswordProviderProps> = ({
         cols,
         isMobile,
         theme,
+        crosswordId,
       }}
     >
       {children}

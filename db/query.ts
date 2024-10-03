@@ -1,28 +1,31 @@
 import { Crosswords } from "./schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { CrosswordPuzzle } from "@/types/types";
+import { CrosswordThemeData } from "@/types/types";
 
 export async function insertCrosswordData(
   theme: string,
-  data: CrosswordPuzzle,
+  data: CrosswordThemeData,
   username: string,
 ) {
   const response = await db
     .insert(Crosswords)
     .values({ theme, data, createdBy: username })
     .returning({ id: Crosswords.id });
-  return response[0].id;
+  return response[0].id as string;
 }
 
 export async function getCrosswordDataById(
   id: string,
-): Promise<[string, CrosswordPuzzle]> {
+): Promise<[string, CrosswordThemeData]> {
   const [crosswordData] = await db
     .select({ theme: Crosswords.theme, data: Crosswords.data })
     .from(Crosswords)
     .where(eq(Crosswords.id, id));
-  return [crosswordData.theme as string, crosswordData.data as CrosswordPuzzle];
+  return [
+    crosswordData.theme as string,
+    crosswordData.data as CrosswordThemeData,
+  ];
 }
 
 export async function getCrosswordIdByTheme(theme: string) {

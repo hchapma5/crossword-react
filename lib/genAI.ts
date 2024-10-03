@@ -4,11 +4,11 @@ import {
   GoogleGenerativeAIFetchError,
   Schema,
 } from "@google/generative-ai";
-import { GenAiCrosswordData } from "@/types/types";
+import { CrosswordThemeData } from "@/types/types";
 
 async function askGeminiForCrosswordData(
   theme: string,
-): Promise<GenAiCrosswordData> {
+): Promise<CrosswordThemeData> {
   const prompt = `
 Generate data for a crossword puzzle with the theme "${theme}". Follow these requirements strictly:
 
@@ -56,7 +56,7 @@ Generate data for a crossword puzzle with the theme "${theme}". Follow these req
 
     console.log("Response from Gemini:", response);
 
-    const parsedData = JSON.parse(response) as GenAiCrosswordData;
+    const parsedData = JSON.parse(response) as CrosswordThemeData;
 
     // Validate and clean data
     const cleanedData = parsedData.filter(({ answer, clue }) => {

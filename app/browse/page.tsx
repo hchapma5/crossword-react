@@ -1,10 +1,8 @@
-import Search from "@/components/ui/search";
 import { getAllCrosswords } from "@/db/query";
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
 import ImageCard from "@/components/image-card";
 import CrosswordGeneratorCard from "@/components/crossword-generator-card";
-import Navbar from "@/components/navbar";
 
 const supabase = createClient();
 

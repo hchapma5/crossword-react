@@ -22,6 +22,8 @@ export default function ImageCard({
             src={imgUrl}
             alt={`Image of ${theme} crossword`}
             fill
+            sizes="100%"
+            priority={true}
             className="object-scale-down p-2"
           />
         </div>

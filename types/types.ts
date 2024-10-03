@@ -1,4 +1,4 @@
-type GenAiCrosswordData = Array<{ clue: string; answer: string }>;
+type CrosswordThemeData = Array<{ clue: string; answer: string }>;
 
 type CrosswordPuzzle = {
   table: string[][];
@@ -35,7 +35,7 @@ type Clue = {
 };
 
 export type {
-  GenAiCrosswordData,
+  CrosswordThemeData,
   CrosswordPuzzle,
   WordPosition,
   Position,
