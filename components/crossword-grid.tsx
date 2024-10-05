@@ -39,7 +39,7 @@ export default function CrosswordGrid() {
         height: "auto",
         gap: "1px",
       }}
-      className={`max-w-fit] max-h-fit`}
+      className={`max-h-fit max-w-fit`}
     >
       {Array.from({ length: rows * cols }, (_, index) => {
         const rowIndex = Math.floor(index / cols);

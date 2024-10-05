@@ -10,6 +10,9 @@ export default async function CrosswordPage({
 }: {
   searchParams: { theme: string };
 }) {
+  // FOR TESTING LOADING STATE ONLY
+  await new Promise((resolve) => setTimeout(resolve, 10000));
+
   // Get the theme from the search params or redirect to the browse page
   const theme = searchParams.theme;
   if (!theme) redirect("/browse");
