@@ -4,10 +4,14 @@ import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSearchParams } from "next/navigation";
+import { generateRandomCrosswordGrid } from "@/utils/layout-generator";
 
 export default function Loading() {
-  const [rows, setRows] = useState(15);
-  const [cols, setCols] = useState(15);
+  const [mockData, setMockData] = useState(generateRandomCrosswordGrid);
+
+  const rows = mockData.rows;
+  const cols = mockData.cols;
+  const layout = mockData.positions;
 
   // get theme from search params
   const searchParams = useSearchParams();
@@ -15,9 +19,7 @@ export default function Loading() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      const newRandom = Math.floor(Math.random() * (20 - 10 + 1)) + 10;
-      setRows(newRandom);
-      setCols(newRandom);
+      setMockData(generateRandomCrosswordGrid);
     }, 2000);
     return () => clearInterval(interval);
   }, []);
@@ -39,9 +41,16 @@ export default function Loading() {
             }}
             className={`max-h-fit max-w-fit`}
           >
-            {Array.from({ length: rows * cols }, (_, index) => (
-              <Skeleton key={index} className="aspect-square" />
-            ))}
+            {Array.from({ length: rows * cols }, (_, index) => {
+              const rowIndex = Math.floor(index / cols);
+              const colIndex = index % cols;
+              const position = `${rowIndex},${colIndex}`;
+              const isFilled = layout.has(position);
+
+              if (isFilled)
+                return <Skeleton key={index} className="aspect-square" />;
+              return <div className="aspect-square" key={index} />;
+            })}
           </div>
         </div>
         {/* Clues Container Skeleton */}

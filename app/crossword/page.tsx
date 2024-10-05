@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import askGeminiForCrosswordData from "@/lib/genAI";
-import { generateCrosswordGameData } from "@/utils/crosswordUtils";
+import { generateCrosswordGameData } from "@/utils/crossword-utils";
 import CrosswordPuzzlePage from "@/components/crossword-puzzle";
 import { insertCrosswordData } from "@/db/query";
 import { currentUser } from "@clerk/nextjs/server";

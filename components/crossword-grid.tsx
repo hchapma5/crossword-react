@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { checkIfThumbnailExists } from "@/db/storage";
 import { useCrossword } from "./crossword-provider";
-import { captureScreenshotAndUploadToStorage } from "@/utils/utils";
+import { captureScreenshotAndUploadToStorage } from "@/utils/image-utils";
 
 export default function CrosswordGrid() {
   const {
