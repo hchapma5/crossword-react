@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
+import { ThemeProvider } from "@/components/theme-provider";
 import { Inter as FontSans } from "next/font/google";
 import "./globals.css";
 
@@ -33,10 +34,17 @@ export default function RootLayout({
             fontSans.variable,
           )}
         >
-          <main className="flex max-h-screen flex-col">
-            <Navbar />
-            {children}
-          </main>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+          >
+            <main className="flex max-h-screen flex-col">
+              <Navbar />
+              {children}
+            </main>
+          </ThemeProvider>
         </body>
       </html>
     </ClerkProvider>

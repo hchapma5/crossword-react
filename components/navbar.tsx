@@ -2,6 +2,7 @@ import Link from "next/link";
 import Search from "./ui/search";
 import { Grid } from "lucide-react";
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import { ThemeToggle } from "./theme-toggle";
 import CrosswordGeneratorButton from "./crossword-generator-button";
 import GradientText from "./gradient-text";
 
@@ -42,6 +43,7 @@ export default function Navbar() {
         <SignedIn>
           <UserButton />
         </SignedIn>
+        <ThemeToggle />
       </nav>
     </header>
   );
