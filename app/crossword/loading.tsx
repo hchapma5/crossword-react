@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useSearchParams } from "next/navigation";
-import { generateRandomCrosswordGrid } from "@/utils/layout-generator";
+import { generateRandomCrosswordGrid } from "@/utils/mock-layout-generator";
 
 export default function Loading() {
   const [mockData, setMockData] = useState(generateRandomCrosswordGrid);
@@ -20,14 +20,14 @@ export default function Loading() {
   useEffect(() => {
     const interval = setInterval(() => {
       setMockData(generateRandomCrosswordGrid);
-    }, 2000);
+    }, 3000);
     return () => clearInterval(interval);
   }, []);
 
   return (
     <div className="flex w-full flex-col items-center justify-center bg-background p-4">
-      <div className="flex h-[80vh] w-full flex-col gap-4 md:flex-row">
-        <div className="flex w-full justify-center overflow-hidden rounded-lg bg-gray-200 p-10">
+      <div className="flex h-[80vh] w-full flex-col gap-4 backdrop:flex-grow md:flex-row">
+        <div className="relative flex w-full justify-center overflow-hidden rounded-lg bg-gray-200 p-10">
           {/* Crossword Grid Skeleton */}
           <div
             style={{
@@ -39,7 +39,7 @@ export default function Loading() {
               height: "auto",
               gap: "1px",
             }}
-            className={`max-h-fit max-w-fit`}
+            className={`max-h-fit max-w-fit animate-[pulse_3s_ease-in-out_infinite]`}
           >
             {Array.from({ length: rows * cols }, (_, index) => {
               const rowIndex = Math.floor(index / cols);
@@ -52,6 +52,10 @@ export default function Loading() {
               return <div className="aspect-square" key={index} />;
             })}
           </div>
+          {/* Loading Text */}
+          <p className="absolute bottom-1/2 text-2xl font-semibold">
+            Please wait<span>...</span>
+          </p>
         </div>
         {/* Clues Container Skeleton */}
         <div className="flex h-full w-full max-w-xs flex-col">

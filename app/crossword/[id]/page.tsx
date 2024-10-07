@@ -16,7 +16,15 @@ export default async function CrosswordPage({
 
   return (
     <CrosswordPuzzlePage
-      {...{ rows, cols, clues, navigation, positions, theme }}
+      {...{
+        crosswordId: params.id,
+        rows,
+        cols,
+        clues,
+        navigation,
+        positions,
+        theme,
+      }}
     />
   );
 }

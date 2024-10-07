@@ -1,1 +1,0 @@
-ALTER TABLE "crosswords" DROP COLUMN IF EXISTS "thumbnail";

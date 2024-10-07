@@ -5,43 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1724229459659,
-      "tag": "0000_classy_darkstar",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1726373323310,
-      "tag": "0001_tiresome_zarek",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1726373353889,
-      "tag": "0002_bright_ironclad",
-      "breakpoints": true
-    },
-    {
-      "idx": 3,
-      "version": "7",
-      "when": 1726403730097,
-      "tag": "0003_smiling_iron_lad",
-      "breakpoints": true
-    },
-    {
-      "idx": 4,
-      "version": "7",
-      "when": 1726576830625,
-      "tag": "0004_busy_argent",
-      "breakpoints": true
-    },
-    {
-      "idx": 5,
-      "version": "7",
-      "when": 1726578283509,
-      "tag": "0005_glamorous_hemingway",
+      "when": 1728288110740,
+      "tag": "0000_zippy_malice",
       "breakpoints": true
     }
   ]

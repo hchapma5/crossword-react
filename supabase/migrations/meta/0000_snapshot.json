@@ -1,5 +1,5 @@
 {
-  "id": "7006db72-e81e-4b28-8eb5-138072398ab2",
+  "id": "c69851dc-c4e8-48c8-b16a-491ddb2c6bbd",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -33,20 +33,18 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
-      "uniqueConstraints": {
-        "crosswords_theme_unique": {
-          "name": "crosswords_theme_unique",
-          "nullsNotDistinct": false,
-          "columns": [
-            "theme"
-          ]
-        }
-      }
+      "uniqueConstraints": {}
     }
   },
   "enums": {},

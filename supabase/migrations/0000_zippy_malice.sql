@@ -3,5 +3,5 @@ CREATE TABLE IF NOT EXISTS "crosswords" (
 	"theme" text NOT NULL,
 	"data" jsonb NOT NULL,
 	"createdAt" timestamp DEFAULT now() NOT NULL,
-	CONSTRAINT "crosswords_theme_unique" UNIQUE("theme")
+	"username" text NOT NULL
 );

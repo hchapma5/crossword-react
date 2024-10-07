@@ -1,1 +1,0 @@
-ALTER TABLE "crosswords" ADD COLUMN "username" uuid NOT NULL;

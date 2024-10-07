@@ -6,9 +6,7 @@ import {
 } from "@google/generative-ai";
 import { CrosswordThemeData } from "@/types/types";
 
-async function askGeminiForCrosswordData(
-  theme: string,
-): Promise<CrosswordThemeData> {
+async function askGeminiForCrosswordData(theme: string) {
   const prompt = `
 Generate data for a crossword puzzle with the theme "${theme}". Follow these requirements strictly:
 
@@ -65,17 +63,14 @@ Generate data for a crossword puzzle with the theme "${theme}". Follow these req
       return isValidWord && isValidClue;
     });
 
-    console.log("Initial data lenght:", parsedData.length);
-    console.log("Cleaned data length:", cleanedData.length);
-
-    return cleanedData;
+    return { data: cleanedData };
   } catch (error) {
     if (error instanceof GoogleGenerativeAIFetchError) {
       console.error("Error fetching data from Gemini:", error);
     } else {
       console.error("Error generating crossword data:", error);
     }
-    throw new Error("Failed to generate crossword data");
+    return { error: error };
   }
 }
 

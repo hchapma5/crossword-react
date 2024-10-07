@@ -1,7 +1,11 @@
-import clg from "crossword-layout-generator";
+import { generateLayout } from "crossword-layout-generator";
 import { CrosswordPuzzle } from "@/types/types";
 
 export function generateRandomCrosswordGrid() {
+  // temporarily disable crossword-layout-generator logging
+  console.log = () => {};
+  console.error = () => {};
+
   // mock theme data
   const data = Array.from({ length: 20 }, () => {
     return {
@@ -10,13 +14,15 @@ export function generateRandomCrosswordGrid() {
     };
   });
 
-  // generate crossword layout
-  const puzzle = clg.generateLayout(data) as CrosswordPuzzle;
-
   const positions = new Set<string>();
 
+  // generate crossword layout
+  const puzzle = generateLayout(data) as CrosswordPuzzle;
+
   puzzle.result.forEach((word) => {
-    word.answer.split("").forEach((_, letterIndex) => {
+    const letters = word.answer.split("");
+
+    letters.forEach((_, letterIndex) => {
       const position =
         word.orientation === "across"
           ? `${word.starty - 1},${word.startx + letterIndex - 1}`
@@ -32,7 +38,13 @@ export function generateRandomCrosswordGrid() {
   return { positions, rows, cols };
 }
 
-// generate random word of length between 3 and 10
+// generate a random word between 3-10 characters
 function generateRandomWord() {
-  return "x".repeat(Math.floor(Math.random() * (10 - 3 + 1)) + 3);
+  const length = Math.floor(Math.random() * (10 - 3 + 1)) + 3;
+  const characters = "abcdefghijklmnopqrstuvwxyz";
+  let string = "";
+  for (let i = 0; i < length; i++) {
+    string += characters.charAt(Math.floor(Math.random() * characters.length));
+  }
+  return string;
 }
