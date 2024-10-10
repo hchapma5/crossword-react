@@ -9,6 +9,8 @@ import React, {
   useRef,
 } from "react";
 import { Clue } from "@/types/types";
+import CrosswordCongratulations from "./crossword-congrats";
+import { Button } from "./ui/button";
 
 type CrosswordContextType = {
   crosswordId: string;
