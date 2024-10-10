@@ -1,16 +1,23 @@
 "use server";
 
-//TODO: Finish implementation of isPuzzleComplete function
-export const isPuzzleComplete = async (formData: FormData) => {
-  //TODO: Fetch completedPuzzleData from the database
-  // const data = Object.fromEntries(formData.entries());
-  // for (const [position, answer] of Object.entries(data)) {
-  //   if (position.startsWith("$ACTION")) continue;
-  //   if (completedPuzzleData.get(position) !== answer) {
-  //     console.log(position, "is incorrect");
-  //     return console.log("no win!");
-  //   }
-  // }
-  // return console.log("you won!");
-  return console.log("isPuzzleComplete function not implemented");
-};
+import { getCrosswordAnswers } from "@/db/query";
+
+export async function isPuzzleComplete(formData: FormData) {
+  const crosswordId = formData.get("crosswordId") as string;
+  console.log("crossword id: ", crosswordId);
+
+  const correctAnswers = await getCrosswordAnswers(crosswordId!);
+  console.log("correct answers: ", correctAnswers);
+
+  // remove id from the form data
+  formData.delete("crosswordId");
+
+  // Iteration over the form data and compare the answers
+  for (const [key, value] of Array.from(formData.entries())) {
+    if (correctAnswers[key] !== value) {
+      console.log(`Incorrect answer for ${key}`);
+      return console.log("invalid crossword");
+    }
+  }
+  return console.log("valid crossword");
+}

@@ -1,16 +1,18 @@
-import { Crosswords } from "./schema";
+import { Crosswords, Ratings } from "./schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
 import { CrosswordThemeData } from "@/types/types";
+import { InsertCrossword } from "./schema";
 
-export async function insertCrosswordData(
-  theme: string,
-  data: CrosswordThemeData,
-  username: string,
-) {
+export async function insertCrosswordData({
+  theme,
+  data,
+  createdBy: username,
+  answers,
+}: InsertCrossword) {
   const response = await db
     .insert(Crosswords)
-    .values({ theme, data, createdBy: username })
+    .values({ theme, data, createdBy: username, answers })
     .returning({ id: Crosswords.id });
   return response[0].id as string;
 }
@@ -44,7 +46,56 @@ export async function getAllCrosswords() {
       theme: Crosswords.theme,
       username: Crosswords.createdBy,
       createdAt: Crosswords.createdAt,
+      rating: Crosswords.averageRating,
     })
     .from(Crosswords);
   return crosswordData;
+}
+
+export async function getCrosswordAnswers(id: string) {
+  const crosswordData = await db
+    .select({ answers: Crosswords.answers })
+    .from(Crosswords)
+    .where(eq(Crosswords.id, id));
+  return crosswordData[0].answers as { [key: string]: string };
+}
+
+export async function addRating(
+  crosswordId: string,
+  userId: string,
+  rating: number,
+) {
+  // Insert the new rating
+  await db.insert(Ratings).values({
+    crosswordId,
+    rating,
+    userId,
+  });
+
+  // Fetch the current crossword details
+  const crossword = await db
+    .select({
+      ratingsCount: Crosswords.ratingsCount,
+      totalRating: Crosswords.totalRating,
+    })
+    .from(Crosswords)
+    .where(eq(Crosswords.id, crosswordId));
+
+  if (!crossword) {
+    throw new Error("Crossword not found");
+  }
+
+  // Update ratings count, total rating, and average rating
+  const newRatingsCount = crossword[0].ratingsCount + 1;
+  const newTotalRating = crossword[0].totalRating + rating;
+  const newAverageRating = newTotalRating / newRatingsCount;
+
+  await db
+    .update(Crosswords)
+    .set({
+      ratingsCount: newRatingsCount,
+      totalRating: newTotalRating,
+      averageRating: newAverageRating,
+    })
+    .where(eq(Crosswords.id, crosswordId));
 }

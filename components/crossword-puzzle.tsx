@@ -24,8 +24,11 @@ type CrosswordPuzzleProps = {
 export default async function CrosswordPuzzlePage(props: CrosswordPuzzleProps) {
   const { crosswordId, clues, rows, cols, navigation, positions, theme } =
     props;
+
   return (
     <form action={isPuzzleComplete}>
+      {/* Inject crossword id into form data */}
+      <input type="hidden" name="crosswordId" value={crosswordId} />{" "}
       <CrosswordProvider
         {...{
           crosswordId,
@@ -39,7 +42,7 @@ export default async function CrosswordPuzzlePage(props: CrosswordPuzzleProps) {
       >
         <div className="flex flex-col items-center justify-center bg-background p-4">
           <div className="flex h-full max-h-[80vh] w-full max-w-full flex-col gap-4 backdrop:flex-grow md:flex-row">
-            <div className="relative flex justify-center overflow-hidden rounded-lg bg-gray-200 p-10">
+            <div className="relative flex justify-center overflow-hidden rounded-lg bg-gray-200 p-10 dark:bg-gray-600">
               <CrosswordGrid />
               <div className="absolute bottom-4 right-4">
                 <Button type="submit">Submit</Button>

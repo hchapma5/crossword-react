@@ -22,7 +22,7 @@ export default async function BrowseCrosswords({
   );
 
   return (
-    <div className="bg-gray-100 py-6 sm:px-6 lg:px-8">
+    <div className="bg-gray-100 py-6 dark:bg-gray-500 sm:px-6 lg:px-8">
       <section className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
           {filteredCrosswords.map((crossword) => {
@@ -41,6 +41,7 @@ export default async function BrowseCrosswords({
                   imgUrl={data.publicUrl}
                   username={crossword.username}
                   createdAt={crossword.createdAt}
+                  rating={crossword.rating}
                 />
               </Link>
             );

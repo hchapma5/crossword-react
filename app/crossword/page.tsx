@@ -1,12 +1,11 @@
 import { redirect } from "next/navigation";
 import askGeminiForCrosswordData from "@/lib/genAI";
 import { generateCrosswordGameData } from "@/utils/crossword-utils";
-import CrosswordPuzzlePage from "@/components/crossword-puzzle";
 import { insertCrosswordData } from "@/db/query";
 import { currentUser } from "@clerk/nextjs/server";
 import { redis } from "@/db/upstash";
 import { Ratelimit } from "@upstash/ratelimit";
-import { headers } from "next/headers";
+import CrosswordPuzzle from "@/components/crossword-puzzle";
 
 const rateLimit = new Ratelimit({
   redis,
@@ -19,9 +18,6 @@ export default async function CrosswordPage({
 }: {
   searchParams: { theme: string };
 }) {
-  // FOR TESTING LOADING STATE ONLY
-  await new Promise((resolve) => setTimeout(resolve, 10000));
-
   const user = await currentUser();
 
   if (!user) {
@@ -55,17 +51,26 @@ export default async function CrosswordPage({
   const { completedPuzzle, clues, positions, navigation, rows, cols } =
     generateCrosswordGameData(data!);
 
-  //TODO: Refactor this to prompt user to save the crossword (supabase db)
   // Insert the crossword data into the database
-  const crosswordId = await insertCrosswordData(
+  const crosswordId = await insertCrosswordData({
     theme,
-    data!,
-    user!.username || user!.id,
-  );
+    data: data!,
+    createdBy: user.username || user.id,
+    answers: completedPuzzle,
+  });
 
   return (
-    <CrosswordPuzzlePage
-      {...{ crosswordId, rows, cols, clues, navigation, positions, theme }}
+    <CrosswordPuzzle
+      {...{
+        completedPuzzle,
+        theme,
+        crosswordId,
+        clues,
+        positions,
+        navigation,
+        rows,
+        cols,
+      }}
     />
   );
 }

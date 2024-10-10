@@ -8,7 +8,7 @@ import GradientText from "./gradient-text";
 
 export default function Navbar() {
   return (
-    <header className="sticky flex h-14 items-center border-b bg-white px-4 py-8 lg:px-6">
+    <header className="sticky flex h-14 items-center border-b px-4 py-8 lg:px-6">
       {/* Title */}
       <Link className="flex w-1/3 items-center justify-start" href="/">
         <Grid className="h-6 w-6" />

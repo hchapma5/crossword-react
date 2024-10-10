@@ -2,7 +2,7 @@ import { Clue, CrosswordPuzzle, CrosswordThemeData } from "@/types/types";
 import clg from "crossword-layout-generator";
 
 export function generateCrosswordGameData(themeData: CrosswordThemeData) {
-  let completedPuzzle = new Map<string, string>();
+  let answers = new Map<string, string>();
   let clues: Array<Clue> = [];
   let positions = new Map<
     string,
@@ -47,9 +47,11 @@ export function generateCrosswordGameData(themeData: CrosswordThemeData) {
           id: isFirstLetter ? word.position : existingCell?.id,
         });
 
-        completedPuzzle.set(position, word.answer[letterIndex]);
+        answers.set(position, word.answer[letterIndex]);
       });
     });
+
+  const completedPuzzle = Object.fromEntries(answers);
 
   return { completedPuzzle, clues, positions, navigation, rows, cols };
 }
