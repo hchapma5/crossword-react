@@ -1,6 +1,6 @@
 type CrosswordThemeData = Array<{ clue: string; answer: string }>;
 
-type CrosswordPuzzle = {
+type CrosswordPuzzleData = {
   table: string[][];
   result: {
     clue: string;
@@ -36,7 +36,7 @@ type Clue = {
 
 export type {
   CrosswordThemeData,
-  CrosswordPuzzle,
+  CrosswordPuzzleData,
   WordPosition,
   Position,
   Direction,

@@ -11,9 +11,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { validateCrosswordPuzzle } from "@/utils/actions";
-import { useFormState } from "react-dom";
 import { useCrossword } from "./crossword-provider";
+import { useFormState } from "react-dom";
+import { validateCrosswordPuzzle } from "@/utils/actions";
 
 type CrosswordValidatorProps = {
   children: React.ReactNode;
@@ -22,17 +22,17 @@ type CrosswordValidatorProps = {
 export default function CrosswordValidator({
   children,
 }: CrosswordValidatorProps) {
-  const [gameState, formAction] = useFormState(validateCrosswordPuzzle, {
-    message: "",
-    success: false,
-  });
   const { crosswordId } = useCrossword();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [rating, setRating] = useState(0);
   const router = useRouter();
 
+  const [gameState, formAction] = useFormState(validateCrosswordPuzzle, {
+    message: "",
+    success: false,
+  });
+
   useEffect(() => {
-    console.log("gameState", gameState);
     if (gameState.success) {
       setDialogOpen(true);
     }
@@ -50,7 +50,6 @@ export default function CrosswordValidator({
   return (
     <>
       <form action={formAction} className="contents">
-        <input type="hidden" name="crosswordId" value={crosswordId} />
         <Button type="submit">Submit</Button>
         {children}
       </form>
@@ -61,7 +60,7 @@ export default function CrosswordValidator({
               Congratulations! 🧩
             </DialogTitle>
             <DialogDescription className="text-center text-lg">
-              You've completed the crossword puzzle!
+              You&apos;ve completed the crossword puzzle!
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">

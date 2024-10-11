@@ -1,4 +1,4 @@
-import { Clue, CrosswordPuzzle, CrosswordThemeData } from "@/types/types";
+import { Clue, CrosswordPuzzleData, CrosswordThemeData } from "@/types/types";
 import clg from "crossword-layout-generator";
 
 export function generateCrosswordGameData(themeData: CrosswordThemeData) {
@@ -10,7 +10,9 @@ export function generateCrosswordGameData(themeData: CrosswordThemeData) {
   >();
   let navigation: Array<Array<string>> = [[]];
 
-  const puzzle = clg.generateLayout(themeData) as CrosswordPuzzle;
+  console.log("themeData: ", themeData);
+
+  const puzzle = clg.generateLayout(themeData) as CrosswordPuzzleData;
 
   const rows = puzzle.rows;
   const cols = puzzle.cols;

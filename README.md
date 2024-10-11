@@ -2,7 +2,7 @@
 
 Each theme should be complete []
 The app should be responsive []
-Finish the isPuzzleComplete action []
+Finish the isPuzzleComplete action [X]
 Add a schema for storing user crossword formData []
 Add the functionality to rate a crossword []
 The nav bar should hide search during a game []

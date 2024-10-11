@@ -3,22 +3,22 @@
 import { getCrosswordAnswers } from "@/db/query";
 
 export async function validateCrosswordPuzzle(
-  prevState: { message: string; success: boolean },
+  prevState: any,
   formData: FormData,
 ) {
+  console.log("validating crossword puzzle on the server");
   const crosswordId = formData.get("crosswordId") as string;
-  if (!crosswordId) {
-    return { message: "Crossword ID is missing", success: false };
-  }
+  formData.delete("crosswordId");
 
   const correctAnswers = await getCrosswordAnswers(crosswordId);
+  console.log("correctAnswers", correctAnswers);
   if (!correctAnswers) {
     return { message: "Failed to fetch correct answers", success: false };
   }
 
   // Iteration over the form data and compare the answers
   for (const [key, value] of Array.from(formData.entries())) {
-    if (key !== "crosswordId" && correctAnswers[key] !== value) {
+    if (correctAnswers[key] !== value) {
       return { message: "Incorrect answers", success: false };
     }
   }

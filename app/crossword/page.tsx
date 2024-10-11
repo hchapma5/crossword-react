@@ -6,7 +6,9 @@ import { currentUser } from "@clerk/nextjs/server";
 import { redis } from "@/db/upstash";
 import { Ratelimit } from "@upstash/ratelimit";
 import CrosswordPuzzle from "@/components/crossword-puzzle";
+import { unstable_cache } from "next/cache";
 
+// To implement once testing is done
 const rateLimit = new Ratelimit({
   redis,
   limiter: Ratelimit.slidingWindow(3, "24 h"),
@@ -25,52 +27,42 @@ export default async function CrosswordPage({
     return;
   }
 
-  // const { remaining, limit, success } = await rateLimit.limit(user.id!);
-
-  // // TODO: Handle this case in the UI
-  // if (!success)
-  //   return (
-  //     <div>
-  //       Rate limit: {remaining} / {limit}
-  //     </div>
-  //   );
-
   // Get the theme from the search params or redirect to the browse page
   const theme = searchParams.theme;
   if (!theme) redirect("/browse");
 
-  // fetch the crossword data from Gemini
-  const { data, error } = await askGeminiForCrosswordData(theme);
+  const cache = unstable_cache(
+    async () => {
+      // fetch the crossword data from Gemini
+      const { data } = await askGeminiForCrosswordData(theme);
 
-  // TODO: Handle this case in the UI
-  if (error) {
-    return <div>Something went wrong, please try again...</div>;
-  }
+      // make a copy of the data to avoid mutating the original
+      const dataCopy = { ...data! };
 
-  // Generate the crossword game data
-  const { completedPuzzle, clues, positions, navigation, rows, cols } =
-    generateCrosswordGameData(data!);
+      console.log("data before: ", dataCopy);
 
-  // Insert the crossword data into the database
-  const crosswordId = await insertCrosswordData({
-    theme,
-    data: data!,
-    createdBy: user.username || user.id,
-    answers: completedPuzzle,
-  });
+      // Generate the answers to insert into the database
+      const { completedPuzzle, clues, positions, navigation, rows, cols } =
+        generateCrosswordGameData(dataCopy);
 
-  return (
-    <CrosswordPuzzle
-      {...{
-        completedPuzzle,
+      console.log("data after: ", data);
+
+      const crosswordId = await insertCrosswordData({
         theme,
-        crosswordId,
-        clues,
-        positions,
-        navigation,
-        rows,
-        cols,
-      }}
-    />
+        data: data!,
+        createdBy: user.username || user.id,
+        answers: completedPuzzle,
+      });
+
+      return { crosswordId, clues, positions, navigation, rows, cols };
+    },
+    [`crossword-data:${theme}`],
+    {
+      revalidate: 3600,
+    },
   );
+
+  const crosswordData = await cache();
+
+  return <CrosswordPuzzle {...crosswordData} theme={theme} />;
 }
