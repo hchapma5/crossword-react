@@ -35,6 +35,8 @@ export default function CrosswordValidator({
   useEffect(() => {
     if (gameState.success) {
       setDialogOpen(true);
+    } else {
+      console.log("gameState", gameState.message);
     }
   }, [gameState]);
 
@@ -50,6 +52,7 @@ export default function CrosswordValidator({
   return (
     <>
       <form action={formAction} className="contents">
+        <input type="hidden" name="crosswordId" value={crosswordId} />
         <Button type="submit">Submit</Button>
         {children}
       </form>

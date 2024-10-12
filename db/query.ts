@@ -1,18 +1,22 @@
 import { Crosswords, Ratings } from "./schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
-import { CrosswordThemeData } from "@/types/types";
-import { InsertCrossword } from "./schema";
+import { Answers, CrosswordThemeData } from "@/types/types";
 
-export async function insertCrosswordData({
-  theme,
-  data,
-  createdBy: username,
-  answers,
-}: InsertCrossword) {
+export async function insertCrosswordData(crossword: {
+  theme: string;
+  data: CrosswordThemeData;
+  createdBy: string;
+  answers: Answers;
+}) {
   const response = await db
     .insert(Crosswords)
-    .values({ theme, data, createdBy: username, answers })
+    .values({
+      theme: crossword.theme,
+      data: crossword.data,
+      createdBy: crossword.createdBy,
+      answers: crossword.answers,
+    })
     .returning({ id: Crosswords.id });
   return response[0].id as string;
 }
@@ -52,12 +56,12 @@ export async function getAllCrosswords() {
   return crosswordData;
 }
 
-export async function getCrosswordAnswers(id: string) {
+export async function getCrosswordAnswersById(id: string) {
   const crosswordData = await db
     .select({ answers: Crosswords.answers })
     .from(Crosswords)
     .where(eq(Crosswords.id, id));
-  return crosswordData[0].answers as { [key: string]: string };
+  return crosswordData[0].answers as Answers;
 }
 
 export async function addRating(

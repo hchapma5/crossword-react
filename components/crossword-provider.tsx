@@ -8,9 +8,7 @@ import React, {
   useCallback,
   useRef,
 } from "react";
-import { Clue } from "@/types/types";
-import CrosswordCongratulations from "./crossword-congrats";
-import { Button } from "./ui/button";
+import { Clue, Navigation, Positions } from "@/types/types";
 
 type CrosswordContextType = {
   crosswordId: string;
@@ -29,13 +27,10 @@ type CrosswordContextType = {
     }>
   >;
   theme: string;
-  clues: Array<Clue>;
+  clues: Clue[];
   inputRefs: React.MutableRefObject<Map<string, HTMLInputElement>>;
-  navigation: Array<Array<string>>;
-  positions: Map<
-    string,
-    { indices: { wordIndex: number; letterIndex: number }[]; id?: number }
-  >;
+  navigation: Navigation;
+  positions: Positions;
   moveToNextPosition: () => void;
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleClick: (e: React.MouseEvent<HTMLInputElement>) => void;
@@ -53,13 +48,10 @@ const CrosswordContext = createContext<CrosswordContextType | undefined>(
 type CrosswordProviderProps = {
   children: React.ReactNode;
   crosswordId: string;
-  clues: Array<Clue>;
+  clues: Clue[];
   theme: string;
-  navigation: Array<Array<string>>;
-  positions: Map<
-    string,
-    { indices: { wordIndex: number; letterIndex: number }[]; id?: number }
-  >;
+  navigation: Navigation;
+  positions: Positions;
   rows: number;
   cols: number;
 };
@@ -107,7 +99,7 @@ export const CrosswordProvider: React.FC<CrosswordProviderProps> = ({
 
   const handleClick = useCallback(
     (e: React.MouseEvent<HTMLInputElement>) => {
-      const position = positions.get(e.currentTarget.id)!.indices;
+      const position = positions[e.currentTarget.id]!.indices;
       const { wordIndex, letterIndex } =
         position[0].wordIndex === currentPosition.wordIndex && position[1]
           ? position[1]

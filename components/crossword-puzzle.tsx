@@ -1,4 +1,4 @@
-import { Clue } from "@/types/types";
+import { Clue, Navigation, Positions } from "@/types/types";
 import CollapseButton from "./collapse-button";
 import CrosswordActiveClue from "./crossword-active-clue";
 import CrosswordClues from "./crossword-clues";
@@ -7,16 +7,13 @@ import CrosswordGrid from "./crossword-grid";
 import { CrosswordProvider } from "./crossword-provider";
 import CrosswordValidator from "./crossword-validator";
 
-type CrosswordPuzzleProps = {
+export type CrosswordPuzzleProps = {
   crosswordId: string;
   clues: Clue[];
   rows: number;
   cols: number;
-  navigation: Array<Array<string>>;
-  positions: Map<
-    string,
-    { indices: { wordIndex: number; letterIndex: number }[]; id?: number }
-  >;
+  navigation: Navigation;
+  positions: Positions;
   theme: string;
 };
 

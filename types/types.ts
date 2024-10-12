@@ -34,6 +34,17 @@ type Clue = {
   length: number;
 };
 
+type Answers = { [position: string]: string };
+
+type Positions = { [position: string]: PositionData };
+
+type PositionData = {
+  indices: { wordIndex: number; letterIndex: number }[];
+  id?: number;
+};
+
+type Navigation = string[][];
+
 export type {
   CrosswordThemeData,
   CrosswordPuzzleData,
@@ -42,4 +53,7 @@ export type {
   Direction,
   DirectionsMap,
   Clue,
+  Answers,
+  Positions,
+  Navigation,
 };

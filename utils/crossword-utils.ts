@@ -1,14 +1,18 @@
-import { Clue, CrosswordPuzzleData, CrosswordThemeData } from "@/types/types";
+import {
+  Clue,
+  CrosswordPuzzleData,
+  CrosswordThemeData,
+  Answers,
+  Positions,
+  Navigation,
+} from "@/types/types";
 import clg from "crossword-layout-generator";
 
 export function generateCrosswordGameData(themeData: CrosswordThemeData) {
-  let answers = new Map<string, string>();
-  let clues: Array<Clue> = [];
-  let positions = new Map<
-    string,
-    { indices: { wordIndex: number; letterIndex: number }[]; id?: number }
-  >();
-  let navigation: Array<Array<string>> = [[]];
+  let answers: Answers = {};
+  let clues: Clue[] = [];
+  let positions: Positions = {};
+  let navigation: Navigation = [[]];
 
   console.log("themeData: ", themeData);
 
@@ -20,6 +24,7 @@ export function generateCrosswordGameData(themeData: CrosswordThemeData) {
   puzzle.result
     .filter((word) => word.orientation !== "none")
     .forEach((word, wordIndex) => {
+      // Build the clues array
       clues[wordIndex] = {
         clue: word.clue,
         direction: word.orientation,
@@ -30,6 +35,7 @@ export function generateCrosswordGameData(themeData: CrosswordThemeData) {
       navigation[wordIndex] = [];
 
       word.answer.split("").forEach((_, letterIndex) => {
+        // Calculate the position string based on orientation
         const position =
           word.orientation === "across"
             ? `${word.starty - 1},${word.startx + letterIndex - 1}`
@@ -39,21 +45,24 @@ export function generateCrosswordGameData(themeData: CrosswordThemeData) {
 
         const isFirstLetter = letterIndex === 0;
 
-        const existingCell = positions.get(position);
+        // Retrieve the existing cell data if it exists
+        const existingCell = positions[position];
+
+        // Update the indices array with the current letter's position
         const newIndices = existingCell
           ? [...existingCell.indices, { wordIndex, letterIndex }]
           : [{ wordIndex, letterIndex }];
 
-        positions.set(position, {
+        // Update the positions object with the new indices and id
+        positions[position] = {
           indices: newIndices,
           id: isFirstLetter ? word.position : existingCell?.id,
-        });
+        };
 
-        answers.set(position, word.answer[letterIndex]);
+        // Update the answers object with the current letter
+        answers[position] = word.answer[letterIndex];
       });
     });
 
-  const completedPuzzle = Object.fromEntries(answers);
-
-  return { completedPuzzle, clues, positions, navigation, rows, cols };
+  return { answers, clues, positions, navigation, rows, cols };
 }

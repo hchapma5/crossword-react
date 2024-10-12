@@ -43,7 +43,7 @@ Generate data for a crossword puzzle with the theme "${theme}". Follow these req
   try {
     const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-pro",
+      model: "gemini-1.5-flash",
       generationConfig: {
         responseMimeType: "application/json",
         responseSchema: schema,
@@ -51,9 +51,6 @@ Generate data for a crossword puzzle with the theme "${theme}". Follow these req
     });
     const result = await model.generateContent(prompt);
     const response = result.response.text();
-
-    console.log("Response from Gemini:", response);
-
     const parsedData = JSON.parse(response) as CrosswordThemeData;
 
     // Validate and clean data

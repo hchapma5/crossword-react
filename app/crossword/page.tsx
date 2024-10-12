@@ -5,15 +5,31 @@ import { insertCrosswordData } from "@/db/query";
 import { currentUser } from "@clerk/nextjs/server";
 import { redis } from "@/db/upstash";
 import { Ratelimit } from "@upstash/ratelimit";
-import CrosswordPuzzle from "@/components/crossword-puzzle";
-import { unstable_cache } from "next/cache";
+import CrosswordPuzzle, {
+  CrosswordPuzzleProps,
+} from "@/components/crossword-puzzle";
 
-// To implement once testing is done
+// Rate limiting setup
 const rateLimit = new Ratelimit({
   redis,
   limiter: Ratelimit.slidingWindow(3, "24 h"),
   analytics: true,
 });
+
+// Cache utility functions
+async function getCachedData(key: string) {
+  const cachedData = await redis.get(key);
+  if (cachedData) return cachedData;
+  return null;
+}
+
+async function setCachedData(
+  key: string,
+  data: any,
+  expirationInSeconds: number = 3600,
+) {
+  await redis.set(key, data, { ex: expirationInSeconds });
+}
 
 export default async function CrosswordPage({
   searchParams,
@@ -24,45 +40,42 @@ export default async function CrosswordPage({
 
   if (!user) {
     redirect("/sign-in");
-    return;
   }
 
-  // Get the theme from the search params or redirect to the browse page
   const theme = searchParams.theme;
   if (!theme) redirect("/browse");
 
-  const cache = unstable_cache(
-    async () => {
-      // fetch the crossword data from Gemini
-      const { data } = await askGeminiForCrosswordData(theme);
+  const cacheKey = `crossword:${theme}`;
+  let crosswordData = (await getCachedData(cacheKey)) as CrosswordPuzzleProps;
 
-      // make a copy of the data to avoid mutating the original
-      const dataCopy = { ...data! };
+  if (!crosswordData) {
+    // Fetch the crossword data from Gemini
+    const { data } = await askGeminiForCrosswordData(theme);
 
-      console.log("data before: ", dataCopy);
+    // Generate the answers to insert into the database
+    const { answers, clues, positions, navigation, rows, cols } =
+      generateCrosswordGameData(data!);
 
-      // Generate the answers to insert into the database
-      const { completedPuzzle, clues, positions, navigation, rows, cols } =
-        generateCrosswordGameData(dataCopy);
+    const crosswordId = await insertCrosswordData({
+      theme,
+      data: data!,
+      createdBy: user.username || user.id,
+      answers: answers,
+    });
 
-      console.log("data after: ", data);
+    crosswordData = {
+      crosswordId,
+      clues,
+      positions,
+      navigation,
+      rows,
+      cols,
+      theme,
+    };
 
-      const crosswordId = await insertCrosswordData({
-        theme,
-        data: data!,
-        createdBy: user.username || user.id,
-        answers: completedPuzzle,
-      });
+    // Cache the data
+    await setCachedData(cacheKey, crosswordData);
+  }
 
-      return { crosswordId, clues, positions, navigation, rows, cols };
-    },
-    [`crossword-data:${theme}`],
-    {
-      revalidate: 3600,
-    },
-  );
-
-  const crosswordData = await cache();
-
-  return <CrosswordPuzzle {...crosswordData} theme={theme} />;
+  return <CrosswordPuzzle {...crosswordData} />;
 }

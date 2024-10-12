@@ -45,7 +45,7 @@ export default function CrosswordGrid() {
         const rowIndex = Math.floor(index / cols);
         const colIndex = index % cols;
         const position = `${rowIndex},${colIndex}`;
-        const cellData = positions.get(position);
+        const cellData = positions[position];
 
         if (!cellData) return <div key={position} className="aspect-square" />;
 

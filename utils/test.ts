@@ -6,19 +6,19 @@ import { generateCrosswordGameData } from "./crossword-utils";
 const testData = [
   {
     clue: "Hello, _____",
-    answer: "world",
+    answer: "WORLD",
   },
   {
     clue: "_____, world",
-    answer: "hello",
+    answer: "HELLO",
   },
 ];
 
-const { completedPuzzle } = generateCrosswordGameData(testData);
+const { answers } = generateCrosswordGameData(testData);
 
 insertCrosswordData({
-  theme: "hello, world",
+  theme: "Test Theme",
   data: testData,
   createdBy: "test",
-  answers: completedPuzzle,
+  answers,
 });
