@@ -6,6 +6,7 @@ import {
   integer,
   uuid,
   timestamp,
+  primaryKey,
 } from "drizzle-orm/pg-core";
 
 export const Crosswords = pgTable("crosswords", {
@@ -20,11 +21,15 @@ export const Crosswords = pgTable("crosswords", {
   averageRating: real("averageRating").notNull().default(0),
 });
 
-export const Ratings = pgTable("ratings", {
-  crosswordId: uuid("crosswordId").notNull(),
-  rating: integer("rating").notNull(),
-  userId: text("userId").notNull(),
-  createdAt: timestamp("createdAt").defaultNow().notNull(),
-});
-
-export type InsertCrossword = typeof Crosswords.$inferInsert;
+export const Ratings = pgTable(
+  "ratings",
+  {
+    crosswordId: uuid("crosswordId").notNull(),
+    userId: text("userId").notNull(),
+    rating: integer("rating").notNull(),
+    createdAt: timestamp("createdAt").defaultNow().notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.crosswordId, table.userId] }),
+  }),
+);

@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS "crosswords" (
 --> statement-breakpoint
 CREATE TABLE IF NOT EXISTS "ratings" (
 	"crosswordId" uuid NOT NULL,
-	"rating" integer NOT NULL,
 	"userId" text NOT NULL,
-	"createdAt" timestamp DEFAULT now() NOT NULL
+	"rating" integer NOT NULL,
+	"createdAt" timestamp DEFAULT now() NOT NULL,
+	CONSTRAINT "ratings_crosswordId_userId_pk" PRIMARY KEY("crosswordId","userId")
 );

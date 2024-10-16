@@ -33,8 +33,7 @@ export default function ImageCard({
       </CardContent>
       <CardFooter className="flex flex-grow flex-col items-start space-y-2 p-4">
         <h2 className="truncate text-lg font-semibold">{theme}</h2>
-        <StarRating readOnlyRating={rating} />{" "}
-        {/* TODO: pull rating as props */}
+        <StarRating readOnly={true} initialRating={rating} />{" "}
         <div className="flex w-full items-center justify-between text-center">
           <p className="truncate text-sm text-gray-600">{username}</p>
           <p className="mt-2 text-xs text-gray-500">

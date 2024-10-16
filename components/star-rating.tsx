@@ -1,33 +1,56 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState, forwardRef, useImperativeHandle } from "react";
 import { Star } from "lucide-react";
 
-interface StarRatingProps {
-  readOnlyRating?: number;
-}
-export default function StarRating({ readOnlyRating }: StarRatingProps) {
-  const [rating, setRating] = useState(readOnlyRating ?? 0);
+type StarRatingProps = {
+  readOnly?: boolean;
+  initialRating?: number;
+};
 
-  //TODO: Add logic for hovering over stars
+const StarRating = forwardRef(
+  ({ readOnly = false, initialRating = 0 }: StarRatingProps, ref) => {
+    const [rating, setRating] = useState(initialRating);
+    const [hover, setHover] = useState(0);
 
-  return (
-    <div className="flex">
-      {[1, 2, 3, 4, 5].map((value) => (
-        <Star
-          key={rating}
-          className={`h-6 w-6 ${
-            rating >= value
-              ? "fill-yellow-400 text-yellow-400"
-              : "text-gray-300"
-          } ${!readOnlyRating ? "cursor-pointer" : "disabled"}`}
-          onClick={() => {
-            if (!readOnlyRating) {
-              setRating(rating);
-            }
-          }}
-        />
-      ))}
-    </div>
-  );
-}
+    useImperativeHandle(ref, () => ({
+      getRating: () => rating,
+      setRating: (newRating: number) => !readOnly && setRating(newRating),
+    }));
+
+    const handleMouseEnter = (starIndex: number) => {
+      if (!readOnly) setHover(starIndex);
+    };
+
+    const handleMouseLeave = () => {
+      if (!readOnly) setHover(0);
+    };
+
+    const handleClick = (starIndex: number) => {
+      if (!readOnly) setRating(starIndex);
+    };
+
+    return (
+      <div
+        className={`flex justify-center space-x-1 ${readOnly ? "pointer-events-none" : ""}`}
+      >
+        {[1, 2, 3, 4, 5].map((starIndex: number) => (
+          <Star
+            key={starIndex}
+            size={32}
+            className={` ${!readOnly && "cursor-pointer"} transition-colors duration-200 ${
+              (hover || rating) >= starIndex
+                ? "fill-yellow-400 stroke-yellow-400"
+                : "fill-none stroke-gray-400"
+            } `}
+            onMouseEnter={() => handleMouseEnter(starIndex)}
+            onMouseLeave={handleMouseLeave}
+            onClick={() => handleClick(starIndex)}
+          />
+        ))}
+      </div>
+    );
+  },
+);
+
+export default StarRating;

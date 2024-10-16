@@ -1,3 +1,5 @@
+// "use server";
+
 import { Crosswords, Ratings } from "./schema";
 import { db } from "./db";
 import { eq } from "drizzle-orm";
@@ -64,16 +66,21 @@ export async function getCrosswordAnswersById(id: string) {
   return crosswordData[0].answers as Answers;
 }
 
-export async function addRating(
-  crosswordId: string,
-  userId: string,
-  rating: number,
-) {
+export async function addRating({
+  crosswordId,
+  rating,
+  userId,
+}: {
+  crosswordId: string;
+  rating: number;
+  userId: string;
+}) {
   // Insert the new rating
+
   await db.insert(Ratings).values({
     crosswordId,
     rating,
-    userId,
+    userId: userId!,
   });
 
   // Fetch the current crossword details

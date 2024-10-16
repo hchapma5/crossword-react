@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-
 import {
   Dialog,
   DialogContent,
@@ -15,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useRouter } from "next/navigation";
 import { revalidateTag } from "next/cache";
+import { SignedIn, SignedOut, SignInButton, useUser } from "@clerk/nextjs";
 
 export default function CrosswordGeneratorButton({
   children,
@@ -24,6 +24,7 @@ export default function CrosswordGeneratorButton({
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [theme, setTheme] = useState<string>("");
   const router = useRouter();
+  const user = useUser();
 
   const toggleDialog = () => {
     setIsOpen(!isOpen);
@@ -70,7 +71,16 @@ export default function CrosswordGeneratorButton({
             </div>
           </div>
           <DialogFooter>
-            <Button onClick={handleGenerate}>Generate Crossword</Button>
+            <SignedOut>
+              <SignInButton>
+                <SignInButton>
+                  <Button>Generate Crossword</Button>
+                </SignInButton>
+              </SignInButton>
+            </SignedOut>
+            <SignedIn>
+              <Button onClick={handleGenerate}>Generate Crossword</Button>
+            </SignedIn>
           </DialogFooter>
         </DialogContent>
       </Dialog>

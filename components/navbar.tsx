@@ -3,7 +3,13 @@
 import Link from "next/link";
 import Search from "./ui/search";
 import { Grid } from "lucide-react";
-import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+  useUser,
+} from "@clerk/nextjs";
 import { ThemeToggle } from "./theme-toggle";
 import CrosswordGeneratorButton from "./crossword-generator-button";
 import GradientText from "./gradient-text";
@@ -33,6 +39,7 @@ export default function Navbar() {
         <CrosswordGeneratorButton>
           <GradientText>Generate</GradientText>
         </CrosswordGeneratorButton>
+
         <Link className="underline-offset-4 hover:underline" href="/browse">
           Browse
         </Link>

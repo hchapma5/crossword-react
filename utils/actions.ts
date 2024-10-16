@@ -1,6 +1,6 @@
 "use server";
 
-import { getCrosswordAnswersById } from "@/db/query";
+import { addRating, getCrosswordAnswersById } from "@/db/query";
 
 export async function validateCrosswordPuzzle(
   prevState: any,
@@ -33,4 +33,19 @@ export async function validateCrosswordPuzzle(
     message: "Congratulations! All answers are correct!",
     success: true,
   };
+}
+
+// TODO: handle existing rating (update/recalculate average)
+export async function addRatingAction(
+  rating: number,
+  crosswordId: string,
+  userId: string,
+) {
+  try {
+    await addRating({ crosswordId, rating, userId });
+    return { message: "Rating added", success: true };
+  } catch (error) {
+    console.error(error);
+    return { message: "Failed to add rating", success: false };
+  }
 }

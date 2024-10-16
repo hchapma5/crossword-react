@@ -1,8 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,7 +12,9 @@ import {
 } from "@/components/ui/dialog";
 import { useCrossword } from "./crossword-provider";
 import { useFormState } from "react-dom";
-import { validateCrosswordPuzzle } from "@/utils/actions";
+import { addRatingAction, validateCrosswordPuzzle } from "@/utils/actions";
+import { useAuth } from "@clerk/nextjs";
+import StarRating from "./star-rating";
 
 type CrosswordValidatorProps = {
   children: React.ReactNode;
@@ -24,8 +25,10 @@ export default function CrosswordValidator({
 }: CrosswordValidatorProps) {
   const { crosswordId } = useCrossword();
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [rating, setRating] = useState(0);
   const router = useRouter();
+  const { userId } = useAuth();
+
+  const ratingRef = useRef<{ getRating: () => number } | null>(null);
 
   const [gameState, formAction] = useFormState(validateCrosswordPuzzle, {
     message: "",
@@ -40,11 +43,13 @@ export default function CrosswordValidator({
     }
   }, [gameState]);
 
-  const handleRating = (value: number) => {
-    setRating(value);
-  };
-
-  const handleReturn = () => {
+  // If the user has rated the crossword, add the rating to the database
+  const handleReturn = async () => {
+    const rating = ratingRef.current?.getRating();
+    if (rating) {
+      console.log("rating from handleReturn", rating);
+      await addRatingAction(rating, crosswordId, userId!);
+    }
     setDialogOpen(false);
     router.push("/");
   };
@@ -70,19 +75,7 @@ export default function CrosswordValidator({
             <p className="mb-4 text-center">
               How would you rate this crossword?
             </p>
-            <div className="flex justify-center space-x-2">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <Star
-                  key={star}
-                  className={`h-8 w-8 cursor-pointer ${
-                    star <= rating
-                      ? "fill-yellow-400 text-yellow-400"
-                      : "text-gray-300"
-                  }`}
-                  onClick={() => handleRating(star)}
-                />
-              ))}
-            </div>
+            <StarRating ref={ratingRef} />
           </div>
           <div className="mt-4 flex justify-center">
             <Button onClick={handleReturn} className="w-full max-w-xs">
