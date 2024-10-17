@@ -12,7 +12,12 @@ import {
 } from "@/components/ui/dialog";
 import { useCrossword } from "./crossword-provider";
 import { useFormState } from "react-dom";
-import { addRatingAction, validateCrosswordPuzzle } from "@/utils/actions";
+import {
+  addRatingAction,
+  getUserRatingAction,
+  updateRatingAction,
+  validateCrosswordPuzzle,
+} from "@/utils/actions";
 import { useAuth } from "@clerk/nextjs";
 import StarRating from "./star-rating";
 
@@ -25,6 +30,9 @@ export default function CrosswordValidator({
 }: CrosswordValidatorProps) {
   const { crosswordId } = useCrossword();
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [initialRating, setInitialRating] = useState<number | undefined>(
+    undefined,
+  );
   const router = useRouter();
   const { userId } = useAuth();
 
@@ -34,6 +42,17 @@ export default function CrosswordValidator({
     message: "",
     success: false,
   });
+
+  useEffect(() => {
+    // If the user has already rated the crossword, set initial rating
+    const fetchRating = async () => {
+      const rating = await getUserRatingAction(crosswordId, userId!);
+      if (rating) {
+        setInitialRating(rating.rating);
+      }
+    };
+    fetchRating();
+  }, [crosswordId, userId]);
 
   useEffect(() => {
     if (gameState.success) {
@@ -46,8 +65,10 @@ export default function CrosswordValidator({
   // If the user has rated the crossword, add the rating to the database
   const handleReturn = async () => {
     const rating = ratingRef.current?.getRating();
-    if (rating) {
-      console.log("rating from handleReturn", rating);
+
+    if (initialRating && rating && initialRating !== rating) {
+      await updateRatingAction(rating, crosswordId, userId!);
+    } else if (!initialRating && rating) {
       await addRatingAction(rating, crosswordId, userId!);
     }
     setDialogOpen(false);
@@ -75,7 +96,7 @@ export default function CrosswordValidator({
             <p className="mb-4 text-center">
               How would you rate this crossword?
             </p>
-            <StarRating ref={ratingRef} />
+            <StarRating ref={ratingRef} initialRating={initialRating} />
           </div>
           <div className="mt-4 flex justify-center">
             <Button onClick={handleReturn} className="w-full max-w-xs">

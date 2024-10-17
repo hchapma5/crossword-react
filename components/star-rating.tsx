@@ -53,4 +53,6 @@ const StarRating = forwardRef(
   },
 );
 
+StarRating.displayName = "StarRating";
+
 export default StarRating;

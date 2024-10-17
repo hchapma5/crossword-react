@@ -1,6 +1,15 @@
 "use server";
 
-import { addRating, getCrosswordAnswersById } from "@/db/query";
+import { db } from "@/db/db";
+import {
+  getCrosswordAnswersById,
+  getCrosswordRating,
+  getUserCrosswordRating,
+  insertCrosswordRating,
+  updateCrosswordRating,
+  updateUserCrosswordRating,
+} from "@/db/query";
+import { Crosswords } from "@/db/schema";
 
 export async function validateCrosswordPuzzle(
   prevState: any,
@@ -35,17 +44,68 @@ export async function validateCrosswordPuzzle(
   };
 }
 
-// TODO: handle existing rating (update/recalculate average)
 export async function addRatingAction(
   rating: number,
   crosswordId: string,
   userId: string,
 ) {
   try {
-    await addRating({ crosswordId, rating, userId });
+    // Insert the new rating
+    await insertCrosswordRating(crosswordId, rating, userId);
+
+    // Fetch the current crossword details
+    const crossword = await getCrosswordRating(crosswordId);
+
+    // Update ratings count, total rating, and average rating
+    const newRatingsCount = crossword.ratingsCount + 1;
+    const newTotalRating = crossword.totalRating + rating;
+    const newAverageRating = newTotalRating / newRatingsCount;
+
+    // Update the crossword in the database
+    await updateCrosswordRating(
+      crosswordId,
+      newAverageRating,
+      newRatingsCount,
+      newTotalRating,
+    );
+
     return { message: "Rating added", success: true };
   } catch (error) {
     console.error(error);
     return { message: "Failed to add rating", success: false };
   }
+}
+
+export async function updateRatingAction(
+  rating: number,
+  crosswordId: string,
+  userId: string,
+) {
+  try {
+    const oldRating = await getUserCrosswordRating(crosswordId, userId);
+
+    await updateUserCrosswordRating(crosswordId, rating, userId);
+
+    const crossword = await getCrosswordRating(crosswordId);
+
+    const newTotalRating = crossword.totalRating - oldRating.rating + rating;
+    const newAverageRating = newTotalRating / crossword.ratingsCount;
+
+    await updateCrosswordRating(
+      crosswordId,
+      newAverageRating,
+      crossword.ratingsCount,
+      newTotalRating,
+    );
+
+    return { message: "Rating updated", success: true };
+  } catch (error) {
+    console.error(error);
+    return { message: "Failed to update rating", success: false };
+  }
+}
+
+export async function getUserRatingAction(crosswordId: string, userId: string) {
+  const rating = await getUserCrosswordRating(crosswordId, userId);
+  return rating;
 }

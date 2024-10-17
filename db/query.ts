@@ -2,7 +2,7 @@
 
 import { Crosswords, Ratings } from "./schema";
 import { db } from "./db";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { Answers, CrosswordThemeData } from "@/types/types";
 
 export async function insertCrosswordData(crossword: {
@@ -66,24 +66,35 @@ export async function getCrosswordAnswersById(id: string) {
   return crosswordData[0].answers as Answers;
 }
 
-export async function addRating({
-  crosswordId,
-  rating,
-  userId,
-}: {
-  crosswordId: string;
-  rating: number;
-  userId: string;
-}) {
-  // Insert the new rating
-
+export async function insertCrosswordRating(
+  crosswordId: string,
+  rating: number,
+  userId: string,
+) {
   await db.insert(Ratings).values({
     crosswordId,
     rating,
     userId: userId!,
   });
+}
 
-  // Fetch the current crossword details
+export async function updateCrosswordRating(
+  crosswordId: string,
+  averageRating: number,
+  ratingsCount: number,
+  totalRating: number,
+) {
+  await db
+    .update(Crosswords)
+    .set({
+      averageRating,
+      ratingsCount,
+      totalRating,
+    })
+    .where(eq(Crosswords.id, crosswordId));
+}
+
+export async function getCrosswordRating(crosswordId: string) {
   const crossword = await db
     .select({
       ratingsCount: Crosswords.ratingsCount,
@@ -91,22 +102,31 @@ export async function addRating({
     })
     .from(Crosswords)
     .where(eq(Crosswords.id, crosswordId));
+  return crossword[0];
+}
 
-  if (!crossword) {
-    throw new Error("Crossword not found");
-  }
+export async function getUserCrosswordRating(
+  crosswordId: string,
+  userId: string,
+) {
+  const rating = await db
+    .select({ rating: Ratings.rating })
+    .from(Ratings)
+    .where(
+      and(eq(Ratings.crosswordId, crosswordId), eq(Ratings.userId, userId)),
+    );
+  return rating[0];
+}
 
-  // Update ratings count, total rating, and average rating
-  const newRatingsCount = crossword[0].ratingsCount + 1;
-  const newTotalRating = crossword[0].totalRating + rating;
-  const newAverageRating = newTotalRating / newRatingsCount;
-
+export async function updateUserCrosswordRating(
+  crosswordId: string,
+  rating: number,
+  userId: string,
+) {
   await db
-    .update(Crosswords)
-    .set({
-      ratingsCount: newRatingsCount,
-      totalRating: newTotalRating,
-      averageRating: newAverageRating,
-    })
-    .where(eq(Crosswords.id, crosswordId));
+    .update(Ratings)
+    .set({ rating })
+    .where(
+      and(eq(Ratings.crosswordId, crosswordId), eq(Ratings.userId, userId)),
+    );
 }
