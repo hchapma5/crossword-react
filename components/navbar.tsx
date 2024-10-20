@@ -18,7 +18,7 @@ import { usePathname } from "next/navigation";
 export default function Navbar() {
   const path = usePathname();
   return (
-    <header className="sticky flex h-14 items-center justify-between border-b px-4 py-8 lg:px-6">
+    <header className="sticky flex h-[10vh] items-center justify-between border-b px-4 py-8 lg:px-6">
       {/* Title */}
       <Link className="flex w-1/3 items-center justify-start" href="/">
         <Grid className="h-6 w-6" />

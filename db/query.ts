@@ -1,8 +1,8 @@
 // "use server";
 
-import { Crosswords, Ratings } from "./schema";
+import { Crossword, Rating, Crosswords, Ratings } from "./schema";
 import { db } from "./db";
-import { and, eq } from "drizzle-orm";
+import { and, eq, desc, sql, ilike } from "drizzle-orm";
 import { Answers, CrosswordThemeData } from "@/types/types";
 
 export async function insertCrosswordData(crossword: {
@@ -45,17 +45,34 @@ export async function getCrosswordIdByTheme(theme: string) {
   return crosswordData[0].id;
 }
 
-export async function getAllCrosswords() {
-  const crosswordData = await db
-    .select({
-      id: Crosswords.id,
-      theme: Crosswords.theme,
-      username: Crosswords.createdBy,
-      createdAt: Crosswords.createdAt,
-      rating: Crosswords.averageRating,
-    })
-    .from(Crosswords);
-  return crosswordData;
+export async function getCrosswordsBySearchQuery(
+  page: number = 1,
+  search: string = "",
+) {
+  const pageSize = 20;
+  const offset = (page - 1) * pageSize;
+
+  const condition =
+    ilike(Crosswords.theme, `%${search}%`) ||
+    ilike(Crosswords.createdBy, `%${search}%`);
+
+  const crosswords = await db.query.Crosswords.findMany({
+    where: condition,
+    limit: pageSize,
+    offset: offset,
+    orderBy: desc(Crosswords.createdAt),
+  });
+
+  const totalCount = await db
+    .select({ count: sql<number>`count(*)` })
+    .from(Crosswords)
+    .where(condition);
+
+  return {
+    crosswords,
+    totalPages: Math.ceil(totalCount[0].count / pageSize),
+    currentPage: page,
+  };
 }
 
 export async function getCrosswordAnswersById(id: string) {

@@ -9,22 +9,20 @@ import CrosswordGeneratorButton from "./crossword-generator-button";
 
 export default function CrosswordGeneratorCard() {
   return (
-    <>
-      <Card className="mx-auto w-full max-w-sm cursor-pointer transition-shadow duration-300 hover:shadow-lg">
-        <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">
-            Generate your own crossword
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="text-center">
-          <p className="text-muted-foreground">
-            Create unique, personalized crosswords with the power of AI
-          </p>
-        </CardContent>
-        <CardFooter className="justify-center">
-          <CrosswordGeneratorButton />
-        </CardFooter>
-      </Card>
-    </>
+    <Card className="flex h-96 w-full cursor-pointer flex-col justify-between transition-shadow duration-300 hover:shadow-lg">
+      <CardHeader className="text-center">
+        <CardTitle className="text-xl font-bold sm:text-2xl">
+          Generate your own crossword
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="text-center">
+        <p className="text-sm text-muted-foreground sm:text-base">
+          Create unique, personalized crosswords with the power of AI
+        </p>
+      </CardContent>
+      <CardFooter className="justify-center">
+        <CrosswordGeneratorButton />
+      </CardFooter>
+    </Card>
   );
 }

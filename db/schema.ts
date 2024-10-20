@@ -33,3 +33,6 @@ export const Ratings = pgTable(
     pk: primaryKey({ columns: [table.crosswordId, table.userId] }),
   }),
 );
+
+export type Crossword = typeof Crosswords.$inferSelect;
+export type Rating = typeof Ratings.$inferSelect;
