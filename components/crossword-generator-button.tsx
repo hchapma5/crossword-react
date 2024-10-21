@@ -46,7 +46,12 @@ export default function CrosswordGeneratorButton({
       {children ? (
         <button onClick={toggleDialog}>{children}</button>
       ) : (
-        <Button onClick={toggleDialog}>Generate</Button>
+        <button
+          className="hover:scale-96 gradient-bg relative cursor-pointer rounded-[6px] px-6 py-4 font-semibold text-white transition-all duration-200 ease-linear"
+          onClick={toggleDialog}
+        >
+          Generate
+        </button>
       )}
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogContent>
@@ -65,8 +70,8 @@ export default function CrosswordGeneratorButton({
               <Input
                 value={theme}
                 onChange={(e) => setTheme(e.target.value)}
-                className="col-span-3"
-                placeholder="e.g., Space, History, Sports"
+                className="col-span-3 text-sm"
+                placeholder="e.g., Nintendo, 90s Movies"
               />
             </div>
           </div>
@@ -79,7 +84,7 @@ export default function CrosswordGeneratorButton({
               </SignInButton>
             </SignedOut>
             <SignedIn>
-              <Button onClick={handleGenerate}>Generate Crossword</Button>
+              <Button onClick={handleGenerate}>Generate</Button>
             </SignedIn>
           </DialogFooter>
         </DialogContent>

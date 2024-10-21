@@ -2,9 +2,8 @@ import { getCrosswordsBySearchQuery } from "@/db/query";
 import { createClient } from "@/utils/supabase/client";
 import Link from "next/link";
 import ImageCard from "@/components/image-card";
-import CrosswordGeneratorCard from "@/components/crossword-generator-card";
 import PaginationComponent from "./_components/pagination";
-
+import CrosswordGeneratorBanner from "@/components/crossword-generator-banner";
 export const dynamic = "force-dynamic";
 
 const supabase = createClient();
@@ -25,29 +24,33 @@ export default async function BrowseCrosswords({
         <div className="flex justify-center py-2">
           <PaginationComponent totalPages={totalPages} />
         </div>
-        <div className="grid flex-grow auto-rows-fr grid-cols-1 gap-4 rounded-lg bg-gray-100 p-6 dark:bg-gray-500 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {crosswords.map((crossword) => {
-            const { data } = supabase.storage
-              .from("crosswords")
-              .getPublicUrl(`${crossword.id}.png`);
+        <div className="flex flex-col gap-2 rounded-lg bg-gray-100 p-6 dark:bg-gray-500">
+          <div className="col-span-full row-span-1">
+            <CrosswordGeneratorBanner />
+          </div>
+          <div className="grid flex-grow auto-rows-fr grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            {crosswords.map((crossword) => {
+              const { data } = supabase.storage
+                .from("crosswords")
+                .getPublicUrl(`${crossword.id}.png`);
 
-            return (
-              <Link
-                key={crossword.id}
-                href={`/crossword/${crossword.id}`}
-                className="block h-full"
-              >
-                <ImageCard
-                  theme={crossword.theme}
-                  imgUrl={data.publicUrl}
-                  username={crossword.createdBy}
-                  createdAt={crossword.createdAt}
-                  rating={crossword.averageRating}
-                />
-              </Link>
-            );
-          })}
-          <CrosswordGeneratorCard />
+              return (
+                <Link
+                  key={crossword.id}
+                  href={`/crossword/${crossword.id}`}
+                  className="block h-full"
+                >
+                  <ImageCard
+                    theme={crossword.theme}
+                    imgUrl={data.publicUrl}
+                    username={crossword.createdBy}
+                    createdAt={crossword.createdAt}
+                    rating={crossword.averageRating}
+                  />
+                </Link>
+              );
+            })}
+          </div>
         </div>
         <div className="flex justify-center py-2">
           <PaginationComponent totalPages={totalPages} />

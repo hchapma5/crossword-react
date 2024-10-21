@@ -36,10 +36,6 @@ export default function Navbar() {
 
       {/* Actions */}
       <nav className="flex w-1/3 items-center justify-end space-x-4 font-semibold">
-        <CrosswordGeneratorButton>
-          <GradientText>Generate</GradientText>
-        </CrosswordGeneratorButton>
-
         <Link className="underline-offset-4 hover:underline" href="/browse">
           Browse
         </Link>
