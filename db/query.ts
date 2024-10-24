@@ -49,7 +49,7 @@ export async function getCrosswordsBySearchQuery(
   page: number = 1,
   search: string = "",
 ) {
-  const pageSize = 20;
+  const pageSize = 30;
   const offset = (page - 1) * pageSize;
 
   const condition =

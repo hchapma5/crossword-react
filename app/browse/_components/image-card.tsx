@@ -1,6 +1,6 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import Image from "next/image";
-import StarRating from "./star-rating";
+import StarRating from "../../../components/star-rating";
 
 interface ImageCardProps {
   theme: string;
@@ -18,7 +18,7 @@ export default function ImageCard({
   rating,
 }: ImageCardProps) {
   return (
-    <Card className="flex h-96 w-full flex-col overflow-hidden transition-shadow hover:shadow-lg">
+    <Card className="flex h-auto w-full flex-col overflow-hidden transition-shadow hover:shadow-lg sm:h-96">
       <CardContent className="flex-shrink-0 bg-gray-300 p-2 dark:bg-gray-800">
         <div className="relative aspect-square w-full">
           <Image
@@ -32,10 +32,12 @@ export default function ImageCard({
         </div>
       </CardContent>
       <CardFooter className="flex flex-grow flex-col items-start space-y-2 p-4">
-        <h2 className="w-full truncate text-lg font-semibold">{theme}</h2>
+        <h2 className="w-full truncate text-base font-semibold sm:text-lg">
+          {theme}
+        </h2>
         <StarRating readOnly={true} initialRating={rating} />
-        <div className="flex w-full items-center justify-between text-center">
-          <p className="max-w-[60%] truncate text-sm text-gray-600">
+        <div className="flex w-full flex-col items-start justify-between space-y-1 text-left sm:flex-row sm:items-center sm:space-y-0 sm:text-center">
+          <p className="max-w-full truncate text-xs text-gray-600 sm:max-w-[60%] sm:text-sm">
             {username}
           </p>
           <p className="text-xs text-gray-500">
