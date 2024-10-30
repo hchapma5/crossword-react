@@ -2,7 +2,7 @@
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCrossword } from "./crossword-provider";
-import { Button } from "./ui/button";
+import { Button } from "@/components/ui/button";
 
 export default function CollapseButton() {
   const { isCluesCollapsed, setIsCluesCollapsed, isMobile } = useCrossword();

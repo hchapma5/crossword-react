@@ -1,6 +1,6 @@
 "use client";
 
-import { ScrollArea } from "./ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import ClueList from "./clues-list";
 import { useCrossword } from "./crossword-provider";
 import { Direction } from "@/types/types";

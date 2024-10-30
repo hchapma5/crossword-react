@@ -1,6 +1,6 @@
-import CrosswordPuzzlePage from "@/components/crossword-puzzle";
 import { getCrosswordDataById } from "@/db/query";
 import { generateCrosswordGameData } from "@/utils/crossword-utils";
+import CrosswordPuzzlePage from "../_components/crossword-puzzle";
 
 export default async function CrosswordPage({
   params,

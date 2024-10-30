@@ -6,7 +6,7 @@ import { currentUser, User } from "@clerk/nextjs/server";
 import { redis } from "@/db/upstash";
 import { Ratelimit } from "@upstash/ratelimit";
 import { unstable_cache } from "next/cache";
-import CrosswordPuzzle from "@/components/crossword-puzzle";
+import CrosswordPuzzle from "./_components/crossword-puzzle";
 
 // Rate limiting setup
 const rateLimit = new Ratelimit({

@@ -19,7 +19,7 @@ import {
   validateCrosswordPuzzle,
 } from "@/utils/actions";
 import { useAuth } from "@clerk/nextjs";
-import StarRating from "./star-rating";
+import StarRating from "@/components/star-rating";
 
 type CrosswordValidatorProps = {
   children: React.ReactNode;
@@ -36,12 +36,15 @@ export default function CrosswordValidator({
   const router = useRouter();
   const { userId } = useAuth();
 
+  const formRef = useRef<HTMLFormElement>(null);
   const ratingRef = useRef<{ getRating: () => number } | null>(null);
 
   const [gameState, formAction] = useFormState(validateCrosswordPuzzle, {
     message: "",
     success: false,
   });
+
+  const [isFormComplete, setIsFormComplete] = useState(false);
 
   useEffect(() => {
     // If the user has already rated the crossword, set initial rating
@@ -62,6 +65,22 @@ export default function CrosswordValidator({
     }
   }, [gameState]);
 
+  useEffect(() => {
+    if (isFormComplete && formRef.current) {
+      formRef.current.requestSubmit();
+    }
+  }, [isFormComplete]);
+
+  const checkFormCompletion = () => {
+    if (formRef.current) {
+      const inputs = formRef.current.querySelectorAll('input[type="text"]');
+      const allFilled = Array.from(inputs).every(
+        (input) => (input as HTMLInputElement).value.length > 0,
+      );
+      setIsFormComplete(allFilled);
+    }
+  };
+
   // If the user has rated the crossword, add the rating to the database
   const handleReturn = async () => {
     const rating = ratingRef.current?.getRating();
@@ -77,9 +96,13 @@ export default function CrosswordValidator({
 
   return (
     <>
-      <form action={formAction} className="contents">
+      <form
+        ref={formRef}
+        action={formAction}
+        className="contents"
+        onChange={checkFormCompletion}
+      >
         <input type="hidden" name="crosswordId" value={crosswordId} />
-        <Button type="submit">Submit</Button>
         {children}
       </form>
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
