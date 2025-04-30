@@ -18,7 +18,7 @@ export default function ImageCard({
   rating,
 }: ImageCardProps) {
   return (
-    <Card className="flex h-auto w-full flex-col overflow-hidden transition-shadow hover:shadow-lg sm:h-96">
+    <Card className="flex h-full w-full flex-col overflow-hidden transition-shadow hover:shadow-lg">
       <CardContent className="flex-shrink-0 bg-gray-300 p-2 dark:bg-gray-800">
         <div className="relative aspect-square w-full">
           <Image
@@ -31,7 +31,7 @@ export default function ImageCard({
           />
         </div>
       </CardContent>
-      <CardFooter className="flex flex-grow flex-col items-start space-y-2 p-4">
+      <CardFooter className="flex flex-col items-start space-y-2 p-4">
         <h2 className="w-full truncate text-base font-semibold sm:text-lg">
           {theme}
         </h2>
