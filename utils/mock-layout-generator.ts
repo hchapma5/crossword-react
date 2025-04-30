@@ -1,5 +1,5 @@
 import { generateLayout } from "crossword-layout-generator";
-import { CrosswordPuzzle } from "@/types/types";
+import { CrosswordPuzzleData } from "@/types/types";
 
 export function generateRandomCrosswordGrid() {
   // temporarily disable crossword-layout-generator logging
@@ -17,7 +17,7 @@ export function generateRandomCrosswordGrid() {
   const positions = new Set<string>();
 
   // generate crossword layout
-  const puzzle = generateLayout(data) as CrosswordPuzzle;
+  const puzzle = generateLayout(data) as CrosswordPuzzleData;
 
   puzzle.result.forEach((word) => {
     const letters = word.answer.split("");
