@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import askGeminiForCrosswordData from "@/lib/genAI";
 import { generateCrosswordGameData } from "@/utils/crossword-utils";
 import { insertCrosswordData } from "@/db/query";
-import { currentUser, User } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
 import { redis } from "@/db/upstash";
 import { Ratelimit } from "@upstash/ratelimit";
 import { unstable_cache } from "next/cache";
